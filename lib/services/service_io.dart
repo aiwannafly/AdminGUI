@@ -22,16 +22,21 @@ class ServiceIO {
     );
   }
 
-  Future showWidget(BuildContext context, {required Widget child}) async {
+  Future showWidget(BuildContext context,
+      {required Widget child, Color barrierColor = Colors.black38}) async {
     await showDialog(
         context: context,
+        barrierColor: barrierColor,
         builder: (context) => AlertDialog(
-              backgroundColor: Colors.transparent,
               elevation: 0,
+              backgroundColor: Config.bgColor,
               alignment: Alignment.center,
-              content: Center(
-                child: child,
-              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  child
+                ],
+              )
             ));
   }
 

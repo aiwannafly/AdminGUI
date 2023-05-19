@@ -13,9 +13,8 @@ class TouristApi extends CRUDApi<Tourist> {
   static final _crudApi = BaseCRUDApi<Tourist>(
       singleApiName: "tourist",
       multiApiName: "tourists",
-      getId: (t) => t.id,
-      toJSON: _toJSON,
-      fromJSON: _fromJSON);
+      toJSON: toJSON,
+      fromJSON: fromJSON);
 
   factory TouristApi() {
     return TouristApi._internal();
@@ -31,13 +30,10 @@ class TouristApi extends CRUDApi<Tourist> {
     if (genders.isEmpty || skillCategories.isEmpty) {
       return [];
     }
-    String gendersStr = genders
-        .fold(
-            "", (previousValue, element) => "$previousValue,${element.string}")
-        .substring(1);
+    String gendersStr =
+        genders.fold("", (prev, curr) => "$prev,${curr.string}").substring(1);
     String skillsStr = skillCategories
-        .fold(
-            "", (previousValue, element) => "$previousValue,${element.string}")
+        .fold("", (prev, curr) => "$prev,${curr.string}")
         .substring(1);
     var response = await http.get(Uri.parse(
         '${apiUrl}search/tourists?genders=$gendersStr&skillCategories=$skillsStr'));
@@ -48,7 +44,7 @@ class TouristApi extends CRUDApi<Tourist> {
     var collectionJson = jsonDecode(decodedBody);
     List<Tourist> tourists = [];
     for (dynamic entity in collectionJson) {
-      tourists.add(_fromJSON(entity));
+      tourists.add(fromJSON(entity));
     }
     return tourists;
   }
@@ -58,15 +54,19 @@ class TouristApi extends CRUDApi<Tourist> {
     return _crudApi.create(tourist);
   }
 
-  static String _toJSON(Tourist tourist) {
-    Map<String, dynamic> touristDto = {
+  static String toJSON(Tourist tourist) {
+    return jsonEncode(toMap(tourist));
+  }
+
+  static Map<String, dynamic> toMap(Tourist tourist) {
+    return {
+      "id" : tourist.id,
       "birthYear": tourist.birthYear,
       "firstName": tourist.firstName,
       "secondName": tourist.secondName,
       "gender": tourist.gender.string,
       "skillCategory": tourist.skillCategory.string.toUpperCase()
     };
-    return jsonEncode(touristDto);
   }
 
   @override
@@ -79,7 +79,7 @@ class TouristApi extends CRUDApi<Tourist> {
     return _crudApi.delete(tourist);
   }
 
-  static Tourist _fromJSON(dynamic data) {
+  static Tourist fromJSON(dynamic data) {
     TouristBuilder builder = TouristBuilder()
       ..id = data["id"]
       ..birthYear = data["birthYear"]

@@ -3,19 +3,23 @@ import 'package:tourist_admin_panel/api/section_manager_api.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/crud/forms/section_manager_form.dart';
 
-import '../../model/section_manager.dart';
+import '../model/section_manager.dart';
 
-class SectionManagerCRUDContent extends StatefulWidget {
-  const SectionManagerCRUDContent({super.key, required this.sectionManagers});
+class SectionManagerCRUD extends StatefulWidget {
+  const SectionManagerCRUD({super.key, required this.sectionManagers, required this.onTap,
+  this.itemHoverColor, required this.filtersFlex});
 
   final List<SectionManager> sectionManagers;
+  final void Function(SectionManager) onTap;
+  final Color? itemHoverColor;
+  final int filtersFlex;
 
   @override
-  State<SectionManagerCRUDContent> createState() =>
-      _SectionManagerCRUDContentState();
+  State<SectionManagerCRUD> createState() =>
+      _SectionManagerCRUDState();
 }
 
-class _SectionManagerCRUDContentState extends State<SectionManagerCRUDContent> {
+class _SectionManagerCRUDState extends State<SectionManagerCRUD> {
   List<SectionManager> get sectionManagers => widget.sectionManagers;
 
   @override
@@ -23,6 +27,7 @@ class _SectionManagerCRUDContentState extends State<SectionManagerCRUDContent> {
     return BaseCrud<SectionManager>(
         title: "Section managers",
         items: sectionManagers,
+        itemHoverColor: widget.itemHoverColor,
         columns: [
           ColumnData<SectionManager>(
               name: "ID",
@@ -39,9 +44,9 @@ class _SectionManagerCRUDContentState extends State<SectionManagerCRUDContent> {
           ColumnData<SectionManager>(
               name: "Salary, rub.",
               buildColumnElem: (e) => centeredText('${e.salary}'),
-              flex: 2),
+              flex: 3),
           ColumnData<SectionManager>(
-              name: "Employment year",
+              name: "Employm. year",
               buildColumnElem: (e) => centeredText('${e.employmentYear}'),
               flex: 3),
           ColumnData<SectionManager>(
@@ -49,7 +54,7 @@ class _SectionManagerCRUDContentState extends State<SectionManagerCRUDContent> {
               buildColumnElem: (e) => centeredText('${e.birthYear}'),
               flex: 3),
         ],
-        onTap: (t) {},
+        onTap: widget.onTap,
         crudApi: SectionManagerApi(),
         formBuilder: formBuilder,
         filters: buildFilters(),
@@ -70,6 +75,6 @@ class _SectionManagerCRUDContentState extends State<SectionManagerCRUDContent> {
   }
 
   Widget buildFilters() {
-    return Expanded(flex: 1, child: Container());
+    return Expanded(flex: widget.filtersFlex, child: Container());
   }
 }

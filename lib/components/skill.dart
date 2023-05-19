@@ -12,8 +12,8 @@ class SkillView extends StatelessWidget {
     Color color = skillCategory == SkillCategory.beginner
         ? Colors.lightGreenAccent
         : skillCategory == SkillCategory.intermediate
-        ? Colors.yellowAccent
-        : Colors.redAccent;
+        ? Colors.yellow
+        : Colors.red;
     return Text(
       name,
       style: TextStyle(color: color, fontFamily: "Montserrat", fontSize: 16),

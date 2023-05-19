@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/model/base_entity.dart';
@@ -16,7 +18,7 @@ class ColumnData<T> {
 }
 
 class BaseCrud<T extends BaseEntity> extends StatefulWidget {
-  static const double dividerWidth = .25;
+  static const double dividerWidth = .1;
   static const tileHeight = 40.0;
 
   const BaseCrud(
@@ -29,24 +31,27 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
       required this.tailFlex,
       required this.crudApi,
       required this.formBuilder,
+      this.itemHoverColor,
       this.buildUnderneath});
 
   final void Function(T) onTap;
   final String title;
   final Widget Function(T)? buildUnderneath;
-  final Widget Function({required Function(T) onSubmit, T? initial}) formBuilder;
+  final Widget Function({required Function(T) onSubmit, T? initial})
+      formBuilder;
   final CRUDApi<T> crudApi;
   final List<T> items;
   final List<ColumnData<T>> columns;
   final Widget filters;
   final int tailFlex;
+  final Color? itemHoverColor;
 
   @override
   State<BaseCrud<T>> createState() => _BaseCrudState<T>();
 }
 
 class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
-  Color get dividerColor => Colors.grey.shade600;
+  Color get dividerColor => Colors.grey.shade200;
   late final List<ColumnData<T>> columns = widget.columns;
 
   @override
@@ -92,102 +97,109 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: SizedBox(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              flex: 4,
-              child: Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(right: Config.defaultPadding * 2),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.title,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 4,
+          child: Column(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.only(right: Config.defaultPadding * 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    ElevatedButton.icon(
+                      style: TextButton.styleFrom(
+                        padding: Config.paddingAll,
+                      ),
+                      onPressed: create,
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      label: Padding(
+                        padding: Config.paddingAll / 2,
+                        child: Text(
+                          "Add New",
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        ElevatedButton.icon(
-                          style: TextButton.styleFrom(
-                            padding: Config.paddingAll,
-                          ),
-                          onPressed: create,
-                          icon: const Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                          label: Padding(
-                            padding: Config.paddingAll / 2,
-                            child: Text(
-                              "Add New",
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(right: Config.defaultPadding * 2),
-                    child: columnTitles(),
-                  ),
-                  SizedBox(
-                    height: Config.pageHeight(context) * .7,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.only(
-                          right: Config.defaultPadding * 2),
-                      itemBuilder: (BuildContext context, int index) =>
-                          index >= widget.items.length
-                              ? const SizedBox()
-                              : columnRow(widget.items[index]),
-                      separatorBuilder: (BuildContext context, int index) =>
-                          Divider(
-                        color: Colors.grey.shade600,
-                        thickness: BaseCrud.dividerWidth,
-                        height: 1,
                       ),
-                      itemCount: widget.items.length + 1,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Responsive(mobile: const SizedBox(), desktop: widget.filters),
-          ],
+              const SizedBox(
+                height: Config.defaultPadding,
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(right: Config.defaultPadding * 2),
+                child: columnTitles(),
+              ),
+              SizedBox(
+                height: widget.itemHoverColor == null
+                    ? Config.pageHeight(context) * .7
+                    : max(300, Config.pageHeight(context) * .35),
+                child: ListView.separated(
+                  padding:
+                      const EdgeInsets.only(right: Config.defaultPadding * 2),
+                  itemBuilder: (BuildContext context, int index) =>
+                      index >= widget.items.length
+                          ? const SizedBox()
+                          : columnRow(widget.items[index]),
+                  separatorBuilder: (BuildContext context, int index) =>
+                      Divider(
+                    color: Colors.grey.shade600,
+                    thickness: BaseCrud.dividerWidth,
+                    height: 1,
+                  ),
+                  itemCount: widget.items.length + 1,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+        Responsive(mobile: const SizedBox(), desktop: widget.filters),
+      ],
     );
   }
 
   Widget columnTitleWrapper(BuildContext context,
       {required Widget child, Position position = Position.center}) {
     return Container(
-      decoration: BoxDecoration(
-          borderRadius: position == Position.left
-              ? const BorderRadius.horizontal(
-                  left: Radius.circular(Config.defaultRadius))
-              : position == Position.right
-                  ? const BorderRadius.horizontal(
-                      right: Radius.circular(Config.defaultRadius))
-                  : null,
-          border:
-              Border.all(color: dividerColor, width: BaseCrud.dividerWidth)),
-      padding: Config.paddingAll,
-      child: child,
+      color: Config.secondaryColor,// Colors.indigo.withOpacity(.3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            color: dividerColor,
+            height: BaseCrud.tileHeight,
+            width: BaseCrud.dividerWidth / 2,
+          ),
+          child,
+          Container(
+            color: dividerColor,
+            height: BaseCrud.tileHeight,
+            width: BaseCrud.dividerWidth / 2,
+          ),
+        ],
+      ),
     );
   }
 
   TextStyle? columnTitleStyle(BuildContext context) {
+    return const TextStyle(
+      fontFamily: "Montserrat",
+      fontSize: 16,
+      color: Colors.white
+    );
     return Theme.of(context).textTheme.titleMedium;
   }
 
@@ -227,6 +239,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
   Widget columnRow(T item) {
     return InkWell(
       onTap: () => widget.onTap(item),
+      hoverColor: widget.itemHoverColor,
       child: SizedBox(
         height: BaseCrud.tileHeight,
         child: columnItems(item),
@@ -281,7 +294,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
         int? id = await widget.crudApi.create(value);
         if (id == null) {
           await Future.microtask(() {
-            ServiceIO().showMessage("Could not create the tourist :/", context);
+            ServiceIO().showMessage("Could not create the entity :/", context);
           });
         } else {
           setState(() {

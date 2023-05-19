@@ -10,9 +10,8 @@ class SectionManagerApi extends CRUDApi<SectionManager> {
   static final _crudApi = BaseCRUDApi<SectionManager>(
       singleApiName: "sectionManager",
       multiApiName: "sectionManagers",
-      getId: (s) => s.id,
-      toJSON: _toJSON,
-      fromJSON: _fromJSON);
+      toJSON: toJSON,
+      fromJSON: fromJSON);
 
   factory SectionManagerApi() {
     return SectionManagerApi._internal();
@@ -38,8 +37,12 @@ class SectionManagerApi extends CRUDApi<SectionManager> {
     return _crudApi.delete(s);
   }
 
-  static String _toJSON(SectionManager s) {
-    Map<String, dynamic> map = {
+  static String toJSON(SectionManager s) {
+    return jsonEncode(toMap(s));
+  }
+
+  static Map<String, dynamic> toMap(SectionManager s) {
+    return {
       "id": s.id,
       "salary": s.salary,
       "secondName": s.secondName,
@@ -47,10 +50,9 @@ class SectionManagerApi extends CRUDApi<SectionManager> {
       "employmentYear": s.employmentYear,
       "birthYear": s.birthYear
     };
-    return jsonEncode(map);
   }
 
-  static SectionManager _fromJSON(dynamic json) {
+  static SectionManager fromJSON(dynamic json) {
     var builder = SectionManagerBuilder()
       ..id = json["id"]
       ..salary = json["salary"]

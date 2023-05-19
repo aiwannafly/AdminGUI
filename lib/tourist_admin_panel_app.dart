@@ -15,15 +15,10 @@ class TouristAdminPanelApp extends StatelessWidget {
       title: 'Tourist Admin Panel',
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Config.bgColor,
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+        textTheme: GoogleFonts.openSansTextTheme(Theme.of(context).textTheme)
             .apply(bodyColor: Colors.white),
         canvasColor: Config.secondaryColor,
       ),
-      // theme: ThemeData(
-      //     colorSchemeSeed: Config.seedColor,
-      //     brightness: Brightness.light,
-      //     useMaterial3: true
-      // ),
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider(

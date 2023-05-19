@@ -5,20 +5,24 @@ import 'package:tourist_admin_panel/crud/filters/tourist_filters.dart';
 import 'package:tourist_admin_panel/crud/forms/tourist_form.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
 
-import '../../api/tourist_api.dart';
-import '../../model/tourist.dart';
-import '../../services/service_io.dart';
+import '../api/tourist_api.dart';
+import '../model/tourist.dart';
+import '../services/service_io.dart';
 
-class TouristCrudContent extends StatefulWidget {
-  const TouristCrudContent({super.key, required this.tourists});
+class TouristCRUD extends StatefulWidget {
+  const TouristCRUD({super.key, required this.tourists,
+  required this.onTap, required this.filtersFlex, this.itemHoverColor});
 
+  final void Function(Tourist) onTap;
+  final Color? itemHoverColor;
+  final int filtersFlex;
   final List<Tourist> tourists;
 
   @override
-  State<TouristCrudContent> createState() => _TouristCrudContentState();
+  State<TouristCRUD> createState() => _TouristCRUDState();
 }
 
-class _TouristCrudContentState extends State<TouristCrudContent> {
+class _TouristCRUDState extends State<TouristCRUD> {
   List<Tourist> get tourists => widget.tourists;
 
   @override
@@ -52,7 +56,8 @@ class _TouristCrudContentState extends State<TouristCrudContent> {
               buildColumnElem: (e) => centeredText('${e.birthYear}'),
               flex: 2),
         ],
-        onTap: (t) {},
+        onTap: widget.onTap,
+        itemHoverColor: widget.itemHoverColor,
         crudApi: TouristApi(),
         formBuilder: formBuilder,
         filters: buildFilters(),
@@ -74,7 +79,7 @@ class _TouristCrudContentState extends State<TouristCrudContent> {
 
   Widget buildFilters() {
     return Expanded(
-      flex: 1,
+      flex: widget.filtersFlex,
       child: Container(
           margin: const EdgeInsets.only(top: 30),
           child: TouristFilters(

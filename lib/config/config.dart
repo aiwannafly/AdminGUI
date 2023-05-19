@@ -13,7 +13,7 @@ class Config {
   static final backColor = Colors.grey.shade200; // Color(0xFF070824);
   static const primaryColor = Color(0xFF2697FF);
   static const secondaryColor = Color(0xFF2A2D3E);
-  static const bgColor = Color(0xFF212332);
+  static const bgColor = Color(0xFF171928);
   static const defaultPadding = 10.0;
   static const iconSize = 25.0;
   static const paddingAll = EdgeInsets.all(defaultPadding);
@@ -31,6 +31,15 @@ class Config {
     return Text(
       text,
       style: defaultTextStyle(fontSize),
+    );
+  }
+
+  static Widget centeredText(BuildContext context, String text) {
+    return Center(
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
     );
   }
 
