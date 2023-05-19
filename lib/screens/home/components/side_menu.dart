@@ -30,7 +30,14 @@ class SideMenu extends StatelessWidget {
             press: () => context
                 .read<MenuAppController>()
                 .changeCRUD(CRUD.groups),
-          )
+          ),
+          DrawerListTile(
+            title: "Section managers",
+            svgSrc: "assets/icons/tourist.svg",
+            press: () => context
+                .read<MenuAppController>()
+                .changeCRUD(CRUD.sectionManagers),
+          ),
         ],
       ),
     );

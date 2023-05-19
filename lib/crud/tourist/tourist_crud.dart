@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/api/tourist_api.dart';
 import 'package:tourist_admin_panel/crud/connection_error.dart';
 import 'package:tourist_admin_panel/crud/filters/tourist_filters.dart';
-import 'package:tourist_admin_panel/crud/tourist_crud/tourist_crud_content.dart';
+import 'package:tourist_admin_panel/crud/tourist/tourist_crud_content.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
 class TouristCRUD extends StatelessWidget {

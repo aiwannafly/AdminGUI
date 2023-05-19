@@ -1,3 +1,5 @@
+import 'package:tourist_admin_panel/model/base_entity.dart';
+
 enum Gender { male, female }
 
 extension GenderExtension on Gender {
@@ -59,7 +61,7 @@ class TouristBuilder {
   }
 }
 
-class Tourist {
+class Tourist extends BaseEntity {
   int id;
   final Gender gender;
   final String firstName;
@@ -74,4 +76,14 @@ class Tourist {
       required this.secondName,
       required this.birthYear,
       required this.skillCategory});
+
+  @override
+  int getId() {
+    return id;
+  }
+
+  @override
+  void setId(int id) {
+    this.id = id;
+  }
 }

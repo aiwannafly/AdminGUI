@@ -1,29 +1,29 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:tourist_admin_panel/api/base_crud_api.dart';
+import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
 import 'api_fields.dart';
 
-class TouristApi {
+class TouristApi extends CRUDApi<Tourist> {
   TouristApi._internal();
+
+  static final _crudApi = BaseCRUDApi<Tourist>(
+      singleApiName: "tourist",
+      multiApiName: "tourists",
+      getId: (t) => t.id,
+      toJSON: _toJSON,
+      fromJSON: _fromJSON);
 
   factory TouristApi() {
     return TouristApi._internal();
   }
 
+  @override
   Future<List<Tourist>?> getAll() async {
-    var response = await http.get(Uri.parse('${apiUrl}tourists'));
-    if (response.statusCode != 200) {
-      return null;
-    }
-    var decodedBody = utf8.decode(response.body.codeUnits);
-    var collectionJson = jsonDecode(decodedBody);
-    List<Tourist> tourists = [];
-    for (dynamic entity in collectionJson) {
-      tourists.add(_fromJSON(entity));
-    }
-    return tourists;
+    return _crudApi.getAll();
   }
 
   Future<List<Tourist>?> findAll(
@@ -53,20 +53,12 @@ class TouristApi {
     return tourists;
   }
 
+  @override
   Future<int?> create(Tourist tourist) async {
-    var json = _toJSON(tourist);
-    var response = await http.post(Uri.parse('${apiUrl}tourist'),
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-        body: json);
-    if (response.statusCode != 200) {
-      return null;
-    }
-    return jsonDecode(response.body)["id"];
+    return _crudApi.create(tourist);
   }
 
-  String _toJSON(Tourist tourist) {
+  static String _toJSON(Tourist tourist) {
     Map<String, dynamic> touristDto = {
       "birthYear": tourist.birthYear,
       "firstName": tourist.firstName,
@@ -77,22 +69,17 @@ class TouristApi {
     return jsonEncode(touristDto);
   }
 
+  @override
   Future<bool> update(Tourist tourist) async {
-    var json = _toJSON(tourist);
-    var response = await http.post(Uri.parse('${apiUrl}tourist/${tourist.id}'),
-        headers: {
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-        body: json);
-    return response.statusCode == 200;
+    return _crudApi.update(tourist);
   }
 
-  Future<bool> delete(int id) async {
-    var response = await http.delete(Uri.parse('${apiUrl}tourist/$id'));
-    return response.statusCode == 200;
+  @override
+  Future<bool> delete(Tourist tourist) async {
+    return _crudApi.delete(tourist);
   }
 
-  Tourist _fromJSON(dynamic data) {
+  static Tourist _fromJSON(dynamic data) {
     TouristBuilder builder = TouristBuilder()
       ..id = data["id"]
       ..birthYear = data["birthYear"]

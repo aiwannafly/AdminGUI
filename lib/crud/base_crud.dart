@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tourist_admin_panel/api/crud_api.dart';
+import 'package:tourist_admin_panel/model/base_entity.dart';
 
-import '../../config/config.dart';
-import '../../responsive.dart';
+import '../config/config.dart';
+import '../responsive.dart';
+import '../services/service_io.dart';
 
 class ColumnData<T> {
   final String name;
@@ -12,7 +15,7 @@ class ColumnData<T> {
       {required this.name, required this.buildColumnElem, required this.flex});
 }
 
-class BaseCrud<T> extends StatefulWidget {
+class BaseCrud<T extends BaseEntity> extends StatefulWidget {
   static const double dividerWidth = .25;
   static const tileHeight = 40.0;
 
@@ -22,19 +25,17 @@ class BaseCrud<T> extends StatefulWidget {
       required this.items,
       required this.columns,
       required this.onTap,
-      required this.onUpdate,
-      required this.onDelete,
-      required this.onCreate,
       required this.filters,
       required this.tailFlex,
+      required this.crudApi,
+      required this.formBuilder,
       this.buildUnderneath});
 
   final void Function(T) onTap;
   final String title;
-  final Future Function() onCreate;
-  final Future Function(T) onUpdate;
-  final Future Function(T) onDelete;
   final Widget Function(T)? buildUnderneath;
+  final Widget Function({required Function(T) onSubmit, T? initial}) formBuilder;
+  final CRUDApi<T> crudApi;
   final List<T> items;
   final List<ColumnData<T>> columns;
   final Widget filters;
@@ -44,7 +45,7 @@ class BaseCrud<T> extends StatefulWidget {
   State<BaseCrud<T>> createState() => _BaseCrudState<T>();
 }
 
-class _BaseCrudState<T> extends State<BaseCrud<T>> {
+class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
   Color get dividerColor => Colors.grey.shade600;
   late final List<ColumnData<T>> columns = widget.columns;
 
@@ -76,7 +77,7 @@ class _BaseCrudState<T> extends State<BaseCrud<T>> {
           "Edit",
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        onTap: () => widget.onUpdate(item),
+        onTap: () => update(item),
       ),
       PopupMenuItem(
         value: 2,
@@ -84,7 +85,7 @@ class _BaseCrudState<T> extends State<BaseCrud<T>> {
           "Delete",
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        onTap: () => widget.onDelete(item),
+        onTap: () => delete(item),
       ),
     ];
   }
@@ -116,13 +117,13 @@ class _BaseCrudState<T> extends State<BaseCrud<T>> {
                           style: TextButton.styleFrom(
                             padding: Config.paddingAll,
                           ),
-                          onPressed: widget.onCreate,
+                          onPressed: create,
                           icon: const Icon(
                             Icons.add,
                             color: Colors.white,
                           ),
                           label: Padding(
-                            padding: Config.paddingAll,
+                            padding: Config.paddingAll / 2,
                             child: Text(
                               "Add New",
                               style: Theme.of(context).textTheme.titleMedium,
@@ -146,14 +147,16 @@ class _BaseCrudState<T> extends State<BaseCrud<T>> {
                       padding: const EdgeInsets.only(
                           right: Config.defaultPadding * 2),
                       itemBuilder: (BuildContext context, int index) =>
-                          columnRow(widget.items[index]),
+                          index >= widget.items.length
+                              ? const SizedBox()
+                              : columnRow(widget.items[index]),
                       separatorBuilder: (BuildContext context, int index) =>
                           Divider(
                         color: Colors.grey.shade600,
                         thickness: BaseCrud.dividerWidth,
                         height: 1,
                       ),
-                      itemCount: widget.items.length,
+                      itemCount: widget.items.length + 1,
                     ),
                   ),
                 ],
@@ -214,9 +217,7 @@ class _BaseCrudState<T> extends State<BaseCrud<T>> {
     }
     List<Widget> titles = [];
     titles.add(buildColumnTitle(columns.first, Position.left));
-    titles.addAll(columns
-        .sublist(1, columns.length - 1)
-        .map(buildColumnTitle));
+    titles.addAll(columns.sublist(1, columns.length - 1).map(buildColumnTitle));
     titles.add(buildColumnTitle(columns.last, Position.right));
     return Row(
       children: titles,
@@ -271,5 +272,66 @@ class _BaseCrudState<T> extends State<BaseCrud<T>> {
           context,
           child: columnData.buildColumnElem(item),
         ));
+  }
+
+  void create() async {
+    await Future.delayed(const Duration(milliseconds: 10), () {
+      ServiceIO().showWidget(context,
+          child: widget.formBuilder(onSubmit: (value) async {
+        int? id = await widget.crudApi.create(value);
+        if (id == null) {
+          await Future.microtask(() {
+            ServiceIO().showMessage("Could not create the tourist :/", context);
+          });
+        } else {
+          setState(() {
+            value.setId(id);
+            widget.items.add(value);
+          });
+        }
+      }));
+    });
+  }
+
+  void update(T value) async {
+    await Future.delayed(const Duration(milliseconds: 10), () {
+      ServiceIO().showWidget(context,
+          child: widget.formBuilder(
+            onSubmit: (updatedTourist) async {
+              bool? updated = await widget.crudApi.update(updatedTourist);
+              if (!updated) {
+                await Future.microtask(() {
+                  ServiceIO()
+                      .showMessage("Could not update the entity :/", context);
+                });
+              } else {
+                setState(() {
+                  int idx = widget.items.indexOf(value);
+                  widget.items.removeAt(idx);
+                  widget.items.insert(idx, updatedTourist);
+                });
+              }
+            },
+            initial: value,
+          ));
+    });
+  }
+
+  void delete(T value) async {
+    ServiceIO().showProgressCircle(context);
+    bool deleted = await widget.crudApi.delete(value);
+    await Future.microtask(() {
+      Navigator.of(context).pop();
+    });
+    if (!deleted) {
+      await Future.microtask(() {
+        ServiceIO().showMessage(
+            "Could not delete entity with ID ${value.getId()}", context);
+      });
+      return;
+    }
+    setState(() {
+      widget.items.remove(value);
+    });
   }
 }
