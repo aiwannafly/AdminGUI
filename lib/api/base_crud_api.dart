@@ -19,6 +19,7 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
 
   @override
   Future<int?> create(T value) async {
+    print(toJSON(value));
     var response = await http.post(Uri.parse('$apiUrl$singleApiName'),
         headers: {
           "Content-Type": "application/json; charset=UTF-8",

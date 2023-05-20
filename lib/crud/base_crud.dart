@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
+import 'package:tourist_admin_panel/conditionable.dart';
 import 'package:tourist_admin_panel/model/base_entity.dart';
 
 import '../config/config.dart';
@@ -31,6 +32,7 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
       required this.tailFlex,
       required this.crudApi,
       required this.formBuilder,
+      this.modifiable = true,
       this.itemHoverColor,
       this.buildUnderneath});
 
@@ -45,6 +47,7 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
   final Widget filters;
   final int tailFlex;
   final Color? itemHoverColor;
+  final bool modifiable;
 
   @override
   State<BaseCrud<T>> createState() => _BaseCrudState<T>();
@@ -57,6 +60,9 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
   @override
   void initState() {
     super.initState();
+    if (!widget.modifiable) {
+      return;
+    }
     columns.add(ColumnData(
         name: "",
         buildColumnElem: (t) => PopupMenuButton<int>(
@@ -115,22 +121,25 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
                       widget.title,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    ElevatedButton.icon(
-                      style: TextButton.styleFrom(
-                        padding: Config.paddingAll,
-                      ),
-                      onPressed: create,
-                      icon: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                      label: Padding(
-                        padding: Config.paddingAll / 2,
-                        child: Text(
-                          "Add New",
-                          style: Theme.of(context).textTheme.titleMedium,
+                    Visibility(
+                      visible: widget.modifiable,
+                      child: ElevatedButton.icon(
+                        style: TextButton.styleFrom(
+                          padding: Config.paddingAll,
                         ),
-                      ),
+                        onPressed: create,
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                        label: Padding(
+                          padding: Config.paddingAll / 2,
+                          child: Text(
+                            "Add New",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                      )
                     ),
                   ],
                 ),
@@ -174,7 +183,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
   Widget columnTitleWrapper(BuildContext context,
       {required Widget child, Position position = Position.center}) {
     return Container(
-      color: Config.secondaryColor,// Colors.indigo.withOpacity(.3),
+      color: Config.secondaryColor, // Colors.indigo.withOpacity(.3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -196,10 +205,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
 
   TextStyle? columnTitleStyle(BuildContext context) {
     return const TextStyle(
-      fontFamily: "Montserrat",
-      fontSize: 16,
-      color: Colors.white
-    );
+        fontFamily: "Montserrat", fontSize: 16, color: Colors.white);
     return Theme.of(context).textTheme.titleMedium;
   }
 

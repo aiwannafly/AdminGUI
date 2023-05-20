@@ -12,12 +12,14 @@ class TrainerCRUD extends StatefulWidget {
         required this.trainers,
         required this.onTap,
         this.itemHoverColor,
+        this.modifiable = true,
         required this.filtersFlex});
 
   final List<Trainer> trainers;
   final void Function(Trainer) onTap;
   final Color? itemHoverColor;
   final int filtersFlex;
+  final bool modifiable;
 
   @override
   State<TrainerCRUD> createState() => _TrainerCRUDState();
@@ -31,6 +33,7 @@ class _TrainerCRUDState extends State<TrainerCRUD> {
     return BaseCrud<Trainer>(
         title: "Trainers",
         items: trainers,
+        modifiable: widget.modifiable,
         columns: [
           ColumnData<Trainer>(
               name: "ID",

@@ -1,75 +1,55 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:tourist_admin_panel/api/trainer_api.dart';
+import 'package:tourist_admin_panel/components/input_label.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
-import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/crud/trainer_crud.dart';
+import 'package:tourist_admin_panel/model/group.dart';
 
 import '../../api/section_api.dart';
-import '../../api/tourist_api.dart';
-import '../../components/value_setter.dart';
 import '../../config/config.dart';
 import '../../model/section.dart';
 import '../../model/trainer.dart';
 import '../../services/service_io.dart';
 import '../base_crud_future_builder.dart';
-import '../filters/tourist_filters.dart';
 import '../section_crud.dart';
-import '../tourist_crud.dart';
 
-class TrainerForm extends StatefulWidget {
-  const TrainerForm({super.key, required this.onSubmit, this.initial});
+class GroupForm extends StatefulWidget {
+  const GroupForm({super.key, required this.onSubmit, this.initial});
 
-  final Function(Trainer) onSubmit;
-  final Trainer? initial;
+  final Function(Group) onSubmit;
+  final Group? initial;
 
   @override
-  State<TrainerForm> createState() => _TrainerFormState();
+  State<GroupForm> createState() => _GroupFormState();
 }
 
-class _TrainerFormState extends State<TrainerForm> {
-  var builder = TrainerBuilder();
-  static const defaultSalary = 70000;
-  final salaryNotifier = ValueNotifier(defaultSalary);
+class _GroupFormState extends State<GroupForm> {
+  var builder = GroupBuilder();
+  var nameController = TextEditingController();
   Section? currentSection;
-  Tourist? currentTourist;
+  Trainer? currentTrainer;
 
   @override
   void initState() {
     super.initState();
-    salaryNotifier.addListener(updateSalary);
     if (widget.initial != null) {
-      builder = TrainerBuilder.fromExisting(widget.initial!);
+      builder = GroupBuilder.fromExisting(widget.initial!);
+      nameController.text = builder.name;
       currentSection = builder.section;
-      currentTourist = builder.tourist;
-      salaryNotifier.value = builder.salary;
+      currentTrainer = builder.trainer;
       return;
     }
     builder.id = 0;
-    builder.salary = defaultSalary;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    salaryNotifier.removeListener(updateSalary);
-  }
-
-  void updateSalary() {
-    builder.salary = salaryNotifier.value;
   }
 
   String get actionName => widget.initial == null ? "Create" : "Update";
 
-  String get postfix => currentTourist == null
-      ? "_male.png"
-      : currentTourist!.gender == Gender.male
-          ? "_male.png"
-          : "_female.png";
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 450,
+      height: 350,
       decoration: const BoxDecoration(
         borderRadius: Config.borderRadius,
         color: Config.bgColor,
@@ -80,7 +60,7 @@ class _TrainerFormState extends State<TrainerForm> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "$actionName trainer",
+              "$actionName group",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
@@ -99,7 +79,7 @@ class _TrainerFormState extends State<TrainerForm> {
                     width: 150,
                     child: ClipRRect(
                         borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/trainer.png")),
+                        child: Image.asset("assets/images/group.png")),
                   )),
               const SizedBox(
                 width: Config.defaultPadding,
@@ -108,29 +88,15 @@ class _TrainerFormState extends State<TrainerForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: Config.defaultPadding * 3,
+                    height: Config.defaultPadding,
                   ),
                   SizedBox(
-                      width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/tourist$postfix"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectTourist,
-                              color: Config.secondaryColor,
-                              text: currentTourist == null
-                                  ? "Select person"
-                                  : "${currentTourist!.firstName} ${currentTourist!.secondName}")
-                        ],
-                      )),
+                    width: 300,
+                    child: InputLabel(
+                      controller: nameController,
+                      hintText: "Group name",
+                    ),
+                  ),
                   const SizedBox(
                     height: Config.defaultPadding,
                   ),
@@ -158,15 +124,37 @@ class _TrainerFormState extends State<TrainerForm> {
                   const SizedBox(
                     height: Config.defaultPadding,
                   ),
+                  Visibility(
+                    visible: currentSection != null,
+                    child: SizedBox(
+                        width: 300,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Image.asset("assets/images/trainer.png"),
+                            ),
+                            const SizedBox(
+                              width: Config.defaultPadding,
+                            ),
+                            SimpleButton(
+                                onPressed: selectTrainer,
+                                color: Config.secondaryColor,
+                                text: currentTrainer == null
+                                    ? "Select trainer"
+                                    : "${currentTrainer!.tourist.firstName} ${currentTrainer!.tourist.secondName}")
+                          ],
+                        )),
+                  ),
+                  const SizedBox(
+                    height: Config.defaultPadding,
+                  ),
                 ],
               )
             ],
           ),
-          SliderTextSetter<int>(
-              minVal: 30000,
-              maxVal: 250000,
-              notifier: salaryNotifier,
-              leading: "Select salary"),
           const SizedBox(
             height: Config.defaultPadding,
           ),
@@ -188,18 +176,24 @@ class _TrainerFormState extends State<TrainerForm> {
                   )),
               ElevatedButton(
                   onPressed: () {
-                    if (currentTourist == null) {
-                      ServiceIO()
-                          .showMessage("Tourist is not selected", context);
-                      return;
-                    }
                     if (currentSection == null) {
                       ServiceIO()
                           .showMessage("Section is not selected", context);
                       return;
                     }
+                    if (currentTrainer == null) {
+                      ServiceIO()
+                          .showMessage("Trainer is not selected", context);
+                      return;
+                    }
+                    builder.name = nameController.text;
+                    if (builder.name.isEmpty) {
+                      ServiceIO()
+                          .showMessage("Name must not be empty", context);
+                      return;
+                    }
                     builder.section = currentSection!;
-                    builder.tourist = currentTourist!;
+                    builder.trainer = currentTrainer!;
                     Navigator.of(context).pop();
                     widget.onSubmit(builder.build());
                   },
@@ -219,34 +213,6 @@ class _TrainerFormState extends State<TrainerForm> {
     );
   }
 
-  void selectTourist() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: BaseCRUDFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findAll(TouristFilters.selectedGenders,
-                  TouristFilters.selectedSkillCategories),
-              contentBuilder: (tourists) => TouristCRUD(
-                tourists: tourists,
-                onTap: (s) {
-                  currentTourist = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                filtersFlex: 0,
-                itemHoverColor: Colors.grey,
-              ),
-            ),
-          ),
-        ));
-  }
-
   void selectSection() {
     ServiceIO().showWidget(context,
         barrierColor: Colors.transparent,
@@ -262,6 +228,7 @@ class _TrainerFormState extends State<TrainerForm> {
                 sections: sections,
                 onTap: (s) {
                   currentSection = s;
+                  currentTrainer = null;
                   Navigator.of(context).pop();
                   setState(() {});
                 },
@@ -269,5 +236,37 @@ class _TrainerFormState extends State<TrainerForm> {
                 itemHoverColor: Colors.grey,
               ),
             )));
+  }
+
+  void selectTrainer() {
+    if (currentSection == null) {
+      ServiceIO().showMessage("Select section first", context);
+      return;
+    }
+    ServiceIO().showWidget(context,
+        barrierColor: Colors.transparent,
+        child: Container(
+          width: max(1200, Config.pageWidth(context) * .5),
+          height: max(400, Config.pageHeight(context) * .5),
+          color: Config.bgColor.withOpacity(.99),
+          padding: Config.paddingAll,
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            child: BaseCRUDFutureBuilder<Trainer>(
+              itemsGetter: TrainerApi().findBySectionId(currentSection!.id),
+              contentBuilder: (trainers) => TrainerCRUD(
+                trainers: trainers,
+                modifiable: false,
+                onTap: (s) {
+                  currentTrainer = s;
+                  Navigator.of(context).pop();
+                  setState(() {});
+                },
+                filtersFlex: 0,
+                itemHoverColor: Colors.grey,
+              ),
+            ),
+          ),
+        ));
   }
 }

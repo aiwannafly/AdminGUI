@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:tourist_admin_panel/api/api_fields.dart';
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/section_api.dart';
 import 'package:tourist_admin_panel/api/tourist_api.dart';
+
+import 'package:http/http.dart' as http;
 
 import '../model/trainer.dart';
 
@@ -48,6 +51,20 @@ class TrainerApi extends CRUDApi<Trainer> {
   @override
   Future<List<Trainer>?> getAll() {
     return _crudApi.getAll();
+  }
+
+  Future<List<Trainer>?> findBySectionId(int id) async {
+    var response = await http.get(Uri.parse("${apiUrl}search/trainers?sectionId=$id"));
+    if (response.statusCode != 200) {
+      return null;
+    }
+    var decodedBody = utf8.decode(response.body.codeUnits);
+    var collectionJson = jsonDecode(decodedBody);
+    List<Trainer> values = [];
+    for (dynamic json in collectionJson) {
+      values.add(fromJSON(json));
+    }
+    return values;
   }
 
   @override

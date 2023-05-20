@@ -39,6 +39,10 @@ class _SectionCRUDState extends State<SectionCRUD> {
               name: "Name",
               buildColumnElem: (e) => centeredText(e.name),
               flex: 3),
+          ColumnData<Section>(
+              name: "Manager",
+              buildColumnElem: (e) => centeredText('${e.sectionManager.firstName} ${e.sectionManager.secondName}'),
+              flex: 3),
         ],
         onTap: widget.onTap,
         itemHoverColor: widget.itemHoverColor,
