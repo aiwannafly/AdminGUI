@@ -5,6 +5,8 @@ import 'package:tourist_admin_panel/model/trainer.dart';
 
 import '../api/trainer_api.dart';
 import '../components/gender.dart';
+import '../services/service_io.dart';
+import 'filters/trainer_filters.dart';
 
 class TrainerCRUD extends StatefulWidget {
   const TrainerCRUD(
@@ -27,6 +29,20 @@ class TrainerCRUD extends StatefulWidget {
 
 class _TrainerCRUDState extends State<TrainerCRUD> {
   List<Trainer> get trainers => widget.trainers;
+
+  @override
+  void initState() {
+    super.initState();
+    TrainerFilters.ageRangeNotifier.addListener(getFiltered);
+    TrainerFilters.salaryRangeNotifier.addListener(getFiltered);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    TrainerFilters.ageRangeNotifier.removeListener(getFiltered);
+    TrainerFilters.salaryRangeNotifier.removeListener(getFiltered);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +95,29 @@ class _TrainerCRUDState extends State<TrainerCRUD> {
   }
 
   Widget buildFilters() {
-    return Expanded(flex: widget.filtersFlex, child: Container());
+    return Expanded(
+      flex: widget.filtersFlex,
+      child: Container(
+          margin: const EdgeInsets.only(top: 30),
+          child: TrainerFilters(
+            onChange: getFiltered,
+          )),
+    );
+  }
+
+  void getFiltered() async {
+    List<Trainer>? filtered =
+    await TrainerApi().findByGenderAndAgeAndSalary();
+    if (filtered == null) {
+      await Future.microtask(() {
+        ServiceIO()
+            .showMessage("Could not search for these trainers :/", context);
+      });
+      return;
+    }
+    setState(() {
+      trainers.clear();
+      trainers.addAll(filtered);
+    });
   }
 }

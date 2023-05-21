@@ -129,10 +129,9 @@ class _TouristSelectListState extends State<TouristSelectList> {
     );
   }
 
-  void getFiltered(
-      Set<Gender> genders, Set<SkillCategory> skillCategories) async {
+  void getFiltered() async {
     List<Tourist>? filtered =
-        await TouristApi().findByGenderAndSkill(genders, skillCategories);
+        await TouristApi().findByGenderAndSkill();
     if (filtered == null) {
       await Future.microtask(() {
         ServiceIO()

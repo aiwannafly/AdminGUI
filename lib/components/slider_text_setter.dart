@@ -8,6 +8,7 @@ class SliderTextSetter<T extends num> extends StatelessWidget {
     required this.maxVal,
     required this.notifier,
     required this.leading,
+    this.divisions,
     this.showText = true});
 
   final T minVal;
@@ -15,6 +16,7 @@ class SliderTextSetter<T extends num> extends StatelessWidget {
   final ValueNotifier<T> notifier;
   final String leading;
   final bool showText;
+  final int? divisions;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class SliderTextSetter<T extends num> extends StatelessWidget {
                   min: minVal.toDouble(),
                   activeColor: Config.primaryColor,
                   thumbColor: Config.seedColor,
+                  divisions: divisions,
                   inactiveColor: Config.secondaryColor,
                   value: notifier.value.toDouble(),
                   onChanged: (newVal) {

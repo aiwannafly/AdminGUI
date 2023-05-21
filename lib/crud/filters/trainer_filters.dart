@@ -1,24 +1,21 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:tourist_admin_panel/components/gender.dart';
 import 'package:tourist_admin_panel/components/range_slider.dart';
 import 'package:tourist_admin_panel/components/selector_label.dart';
+import 'package:tourist_admin_panel/crud/crud_config.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
-import '../../components/skill.dart';
 import '../../config/config.dart';
 
-class TouristFilters extends StatelessWidget {
-  const TouristFilters({super.key, required this.onChange});
+class TrainerFilters extends StatelessWidget {
+  const TrainerFilters({super.key, required this.onChange});
 
   final VoidCallback onChange;
 
   static final Set<Gender> selectedGenders = Gender.values.toSet();
-  static final Set<SkillCategory> selectedSkillCategories =
-      SkillCategory.values.toSet();
   static final ageRangeNotifier = ValueNotifier(const RangeValues(18, 40));
+  static final salaryRangeNotifier = ValueNotifier(
+      RangeValues(minTrainerSalary.toDouble(), maxTrainerSalary.toDouble()));
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +32,6 @@ class TouristFilters extends StatelessWidget {
       const SizedBox(
         height: Config.defaultPadding,
       ),
-      buildSelector(context,
-          prefix: "Skill category",
-          items: SkillCategory.values,
-          selectedItems: selectedSkillCategories,
-          itemBuilder: (i) => SkillView(skillCategory: i)),
-      const SizedBox(
-        height: Config.defaultPadding,
-      ),
       Config.defaultText("Age"),
       Row(
         children: [
@@ -50,6 +39,24 @@ class TouristFilters extends StatelessWidget {
               flex: 2,
               child: IntRangeSlider(
                   min: 16, max: 40, rangeNotifier: ageRangeNotifier)),
+          const Spacer(
+            flex: 1,
+          )
+        ],
+      ),
+      const SizedBox(
+        height: Config.defaultPadding,
+      ),
+      Config.defaultText("Salary"),
+      Row(
+        children: [
+          Expanded(
+              flex: 2,
+              child: IntRangeSlider(
+                  min: minTrainerSalary,
+                  max: maxTrainerSalary,
+                  divisions: (maxTrainerSalary - minTrainerSalary) ~/ salaryPortion,
+                  rangeNotifier: salaryRangeNotifier)),
           const Spacer(
             flex: 1,
           )

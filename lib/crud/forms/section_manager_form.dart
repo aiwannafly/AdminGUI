@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tourist_admin_panel/components/value_setter.dart';
+import 'package:tourist_admin_panel/components/slider_text_setter.dart';
+import 'package:tourist_admin_panel/crud/crud_config.dart';
 import 'package:tourist_admin_panel/model/section_manager.dart';
 
 import '../../components/input_label.dart';
@@ -20,7 +21,7 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
   var builder = SectionManagerBuilder();
   var firstNameController = TextEditingController();
   var secondNameController = TextEditingController();
-  static const defaultSalary = 70000;
+  static const defaultSalary = minSectionManagerSalary;
   static const defaultBirthYear = 1990;
   static const defaultEmploymentYear = 2010;
   final salaryNotifier = ValueNotifier(defaultSalary);
@@ -121,7 +122,14 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
             const SizedBox(
               height: Config.defaultPadding,
             ),
-            SliderTextSetter<int>(minVal: 30000, maxVal: 250000, notifier: salaryNotifier, leading: "Select salary"),
+            SliderTextSetter<int>(
+                minVal: minSectionManagerSalary,
+                maxVal: maxSectionManagerSalary,
+                divisions:
+                    (maxSectionManagerSalary - minSectionManagerSalary) ~/
+                        salaryPortion,
+                notifier: salaryNotifier,
+                leading: "Select salary"),
             const SizedBox(
               height: Config.defaultPadding,
             ),
@@ -188,8 +196,8 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
                       builder.firstName = firstNameController.text;
                       builder.secondName = secondNameController.text;
                       if (builder.firstName.isEmpty) {
-                        ServiceIO()
-                            .showMessage("First name must not be empty", context);
+                        ServiceIO().showMessage(
+                            "First name must not be empty", context);
                         return;
                       }
                       if (builder.secondName.isEmpty) {

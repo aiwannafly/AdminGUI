@@ -225,9 +225,7 @@ class _CompetitionFormState extends State<CompetitionForm> {
           alignment: Alignment.center,
           child: SingleChildScrollView(
             child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(
-                  TouristFilters.selectedGenders,
-                  TouristFilters.selectedSkillCategories),
+              itemsGetter: TouristApi().findByGenderAndSkill(),
               contentBuilder: (tourists) => TouristSelectList(
                 tourists: tourists,
                 onDispose: () {

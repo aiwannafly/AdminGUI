@@ -2,11 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
+import 'package:tourist_admin_panel/crud/crud_config.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
 import '../../api/section_api.dart';
 import '../../api/tourist_api.dart';
-import '../../components/value_setter.dart';
+import '../../components/slider_text_setter.dart';
 import '../../config/config.dart';
 import '../../model/section.dart';
 import '../../model/trainer.dart';
@@ -162,8 +163,9 @@ class _TrainerFormState extends State<TrainerForm> {
             ],
           ),
           SliderTextSetter<int>(
-              minVal: 30000,
-              maxVal: 250000,
+              minVal: minTrainerSalary,
+              maxVal: maxTrainerSalary,
+              divisions: (maxTrainerSalary - minTrainerSalary) ~/ salaryPortion,
               notifier: salaryNotifier,
               leading: "Select salary"),
           const SizedBox(
@@ -229,8 +231,7 @@ class _TrainerFormState extends State<TrainerForm> {
           alignment: Alignment.center,
           child: SingleChildScrollView(
             child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(TouristFilters.selectedGenders,
-                  TouristFilters.selectedSkillCategories),
+              itemsGetter: TouristApi().findByGenderAndSkill(),
               contentBuilder: (tourists) => TouristCRUD(
                 tourists: tourists,
                 onTap: (s) {

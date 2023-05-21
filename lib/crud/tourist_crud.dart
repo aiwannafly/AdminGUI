@@ -26,6 +26,18 @@ class _TouristCRUDState extends State<TouristCRUD> {
   List<Tourist> get tourists => widget.tourists;
 
   @override
+  void initState() {
+    super.initState();
+    TouristFilters.ageRangeNotifier.addListener(getFiltered);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    TouristFilters.ageRangeNotifier.removeListener(getFiltered);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BaseCrud<Tourist>(
         title: "Registered tourists",
@@ -88,10 +100,9 @@ class _TouristCRUDState extends State<TouristCRUD> {
     );
   }
 
-  void getFiltered(
-      Set<Gender> genders, Set<SkillCategory> skillCategories) async {
+  void getFiltered() async {
     List<Tourist>? filtered =
-        await TouristApi().findByGenderAndSkill(genders, skillCategories);
+        await TouristApi().findByGenderAndSkill();
     if (filtered == null) {
       await Future.microtask(() {
         ServiceIO()
@@ -104,5 +115,4 @@ class _TouristCRUDState extends State<TouristCRUD> {
       tourists.addAll(filtered);
     });
   }
-
 }

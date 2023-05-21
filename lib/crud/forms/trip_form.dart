@@ -10,7 +10,7 @@ import 'package:tourist_admin_panel/model/tourist.dart';
 
 import '../../api/route_api.dart';
 import '../../api/tourist_api.dart';
-import '../../components/value_setter.dart';
+import '../../components/slider_text_setter.dart';
 import '../../config/config.dart';
 import '../../model/trip.dart';
 import '../../services/service_io.dart';
@@ -324,8 +324,7 @@ class _TripFormState extends State<TripForm> {
           alignment: Alignment.center,
           child: SingleChildScrollView(
             child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(TouristFilters.selectedGenders,
-                  TouristFilters.selectedSkillCategories),
+              itemsGetter: TouristApi().findByGenderAndSkill(),
               contentBuilder: (tourists) => TouristCRUD(
                 tourists: tourists,
                 onTap: (s) {
@@ -392,9 +391,7 @@ class _TripFormState extends State<TripForm> {
           alignment: Alignment.center,
           child: SingleChildScrollView(
             child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(
-                  TouristFilters.selectedGenders,
-                  TouristFilters.selectedSkillCategories),
+              itemsGetter: TouristApi().findByGenderAndSkill(),
               contentBuilder: (tourists) => TouristSelectList(
                 tourists: tourists,
                 onDispose: () {

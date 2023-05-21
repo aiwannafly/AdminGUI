@@ -67,9 +67,7 @@ extension CRUDBuilder on CRUD {
   Widget build() {
     return switch (this) {
       CRUD.tourists => ItemsFutureBuilder<Tourist>(
-          itemsGetter: TouristApi().findByGenderAndSkill(
-              TouristFilters.selectedGenders,
-              TouristFilters.selectedSkillCategories),
+          itemsGetter: TouristApi().findByGenderAndSkill(),
           contentBuilder: (tourists) => TouristCRUD(
             tourists: tourists,
             filtersFlex: 2,
@@ -90,10 +88,10 @@ extension CRUDBuilder on CRUD {
           ),
         ),
       CRUD.trainers => ItemsFutureBuilder<Trainer>(
-          itemsGetter: TrainerApi().getAll(),
+          itemsGetter: TrainerApi().findByGenderAndAgeAndSalary(),
           contentBuilder: (trainers) => TrainerCRUD(
             trainers: trainers,
-            filtersFlex: 1,
+            filtersFlex: 2,
           ),
         ),
       CRUD.sectionManagers => ItemsFutureBuilder<SectionManager>(
