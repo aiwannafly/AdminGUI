@@ -9,14 +9,14 @@ import '../components/gender.dart';
 class TrainerCRUD extends StatefulWidget {
   const TrainerCRUD(
       {super.key,
-        required this.trainers,
-        required this.onTap,
-        this.itemHoverColor,
-        this.modifiable = true,
-        required this.filtersFlex});
+      required this.trainers,
+      this.onTap,
+      this.itemHoverColor,
+      this.modifiable = true,
+      required this.filtersFlex});
 
   final List<Trainer> trainers;
-  final void Function(Trainer) onTap;
+  final void Function(Trainer)? onTap;
   final Color? itemHoverColor;
   final int filtersFlex;
   final bool modifiable;
@@ -40,12 +40,9 @@ class _TrainerCRUDState extends State<TrainerCRUD> {
               buildColumnElem: (e) => centeredText(e.id.toString()),
               flex: 1),
           ColumnData<Trainer>(
-              name: "First name",
-              buildColumnElem: (e) => centeredText(e.tourist.firstName),
-              flex: 3),
-          ColumnData<Trainer>(
-              name: "Second name",
-              buildColumnElem: (e) => centeredText(e.tourist.secondName),
+              name: "Name",
+              buildColumnElem: (e) => centeredText(
+                  '${e.tourist.firstName} ${e.tourist.secondName}'),
               flex: 3),
           ColumnData<Trainer>(
               name: "Gender",

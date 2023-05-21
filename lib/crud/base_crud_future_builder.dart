@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/crud/connection_error.dart';
 
-class BaseCRUDFutureBuilder<T> extends StatelessWidget {
-  const BaseCRUDFutureBuilder(
+class ItemsFutureBuilder<T> extends StatelessWidget {
+  const ItemsFutureBuilder(
       {super.key, required this.contentBuilder, required this.itemsGetter});
 
   final Widget Function(List<T>) contentBuilder;

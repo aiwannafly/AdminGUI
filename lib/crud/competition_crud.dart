@@ -1,66 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
+import 'package:tourist_admin_panel/model/competition.dart';
+import 'package:tourist_admin_panel/utils.dart';
 
-import '../api/group_api.dart';
-import '../model/group.dart';
-import 'forms/group_form.dart';
+import '../api/competition_api.dart';
+import 'forms/competition_form.dart';
 
-class GroupCRUD extends StatefulWidget {
-  const GroupCRUD(
+class CompetitionCRUD extends StatefulWidget {
+  const CompetitionCRUD(
       {super.key,
         required this.items,
         this.onTap,
         this.itemHoverColor,
         required this.filtersFlex});
 
-  final List<Group> items;
-  final void Function(Group)? onTap;
+  final List<Competition> items;
+  final void Function(Competition)? onTap;
   final Color? itemHoverColor;
   final int filtersFlex;
 
   @override
-  State<GroupCRUD> createState() => _GroupCRUDState();
+  State<CompetitionCRUD> createState() => _CompetitionCRUDState();
 }
 
-class _GroupCRUDState extends State<GroupCRUD> {
-  List<Group> get items => widget.items;
+class _CompetitionCRUDState extends State<CompetitionCRUD> {
+  List<Competition> get items => widget.items;
 
   @override
   Widget build(BuildContext context) {
-    return BaseCrud<Group>(
-        title: "Groups",
+    return BaseCrud<Competition>(
+        title: "Competitions",
         items: items,
         columns: [
-          ColumnData<Group>(
+          ColumnData<Competition>(
               name: "ID",
               buildColumnElem: (e) => centeredText(e.id.toString()),
               flex: 1),
-          ColumnData<Group>(
+          ColumnData<Competition>(
               name: "Name",
               buildColumnElem: (e) => centeredText(e.name),
-              flex: 3),
-          ColumnData<Group>(
-              name: "Trainer",
-              buildColumnElem: (e) => centeredText('${e.trainer.tourist.firstName} ${e.trainer.tourist.secondName}'),
-              flex: 4),
-          ColumnData<Group>(
-              name: "Section",
-              buildColumnElem: (e) => centeredText(e.trainer.section.name),
-              flex: 3),
+              flex: 2),
+          ColumnData<Competition>(
+              name: "Date",
+              buildColumnElem: (e) => centeredText(dateTimeToStr(e.date)),
+              flex: 2)
         ],
         onTap: widget.onTap,
         itemHoverColor: widget.itemHoverColor,
-        crudApi: GroupApi(),
+        crudApi: CompetitionApi(),
         formBuilder: formBuilder,
         filters: buildFilters(),
         tailFlex: 1);
   }
 
-  Widget formBuilder({required Function(Group) onSubmit, Group? initial}) {
-    return GroupForm(
-      onSubmit: onSubmit,
-      initial: initial,
-    );
+  Widget formBuilder(
+      {required Function(Competition) onSubmit, Competition? initial}) {
+    return CompetitionForm(onSubmit: onSubmit, initial: initial);
   }
 
   Widget centeredText(String text) {
@@ -76,3 +71,4 @@ class _GroupCRUDState extends State<GroupCRUD> {
     return Expanded(flex: widget.filtersFlex, child: Container());
   }
 }
+

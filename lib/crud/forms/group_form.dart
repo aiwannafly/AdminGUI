@@ -37,7 +37,7 @@ class _GroupFormState extends State<GroupForm> {
     if (widget.initial != null) {
       builder = GroupBuilder.fromExisting(widget.initial!);
       nameController.text = builder.name;
-      currentSection = builder.section;
+      currentSection = builder.trainer.section;
       currentTrainer = builder.trainer;
       return;
     }
@@ -49,7 +49,6 @@ class _GroupFormState extends State<GroupForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 350,
       decoration: const BoxDecoration(
         borderRadius: Config.borderRadius,
         color: Config.bgColor,
@@ -155,9 +154,6 @@ class _GroupFormState extends State<GroupForm> {
               )
             ],
           ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -192,7 +188,6 @@ class _GroupFormState extends State<GroupForm> {
                           .showMessage("Name must not be empty", context);
                       return;
                     }
-                    builder.section = currentSection!;
                     builder.trainer = currentTrainer!;
                     Navigator.of(context).pop();
                     widget.onSubmit(builder.build());
@@ -222,7 +217,7 @@ class _GroupFormState extends State<GroupForm> {
             color: Config.bgColor.withOpacity(.99),
             padding: Config.paddingAll,
             alignment: Alignment.center,
-            child: BaseCRUDFutureBuilder<Section>(
+            child: ItemsFutureBuilder<Section>(
               itemsGetter: SectionApi().getAll(),
               contentBuilder: (sections) => SectionCRUD(
                 sections: sections,
@@ -252,7 +247,7 @@ class _GroupFormState extends State<GroupForm> {
           padding: Config.paddingAll,
           alignment: Alignment.center,
           child: SingleChildScrollView(
-            child: BaseCRUDFutureBuilder<Trainer>(
+            child: ItemsFutureBuilder<Trainer>(
               itemsGetter: TrainerApi().findBySectionId(currentSection!.id),
               contentBuilder: (trainers) => TrainerCRUD(
                 trainers: trainers,

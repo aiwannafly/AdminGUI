@@ -27,7 +27,7 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
       required this.title,
       required this.items,
       required this.columns,
-      required this.onTap,
+      this.onTap,
       required this.filters,
       required this.tailFlex,
       required this.crudApi,
@@ -36,7 +36,7 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
       this.itemHoverColor,
       this.buildUnderneath});
 
-  final void Function(T) onTap;
+  final void Function(T)? onTap;
   final String title;
   final Widget Function(T)? buildUnderneath;
   final Widget Function({required Function(T) onSubmit, T? initial})
@@ -244,7 +244,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
 
   Widget columnRow(T item) {
     return InkWell(
-      onTap: () => widget.onTap(item),
+      onTap: () => widget.onTap != null ? widget.onTap!(item) : update(item),
       hoverColor: widget.itemHoverColor,
       child: SizedBox(
         height: BaseCrud.tileHeight,

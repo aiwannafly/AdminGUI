@@ -11,9 +11,9 @@ import '../services/service_io.dart';
 
 class TouristCRUD extends StatefulWidget {
   const TouristCRUD({super.key, required this.tourists,
-  required this.onTap, required this.filtersFlex, this.itemHoverColor});
+  this.onTap, required this.filtersFlex, this.itemHoverColor});
 
-  final void Function(Tourist) onTap;
+  final void Function(Tourist)? onTap;
   final Color? itemHoverColor;
   final int filtersFlex;
   final List<Tourist> tourists;
@@ -36,13 +36,13 @@ class _TouristCRUDState extends State<TouristCRUD> {
               buildColumnElem: (e) => centeredText(e.id.toString()),
               flex: 1),
           ColumnData<Tourist>(
-              name: "First name",
-              buildColumnElem: (e) => centeredText(e.firstName),
+              name: "Name",
+              buildColumnElem: (e) => centeredText('${e.firstName} ${e.secondName}'),
               flex: 3),
           ColumnData<Tourist>(
-              name: "Second name",
-              buildColumnElem: (e) => centeredText(e.secondName),
-              flex: 3),
+              name: "Group",
+              buildColumnElem: (e) => centeredText(e.group != null ? e.group!.name : "-"),
+              flex: 2),
           ColumnData<Tourist>(
               name: "Skill category",
               buildColumnElem: (e) => SkillView(skillCategory: e.skillCategory),
@@ -91,7 +91,7 @@ class _TouristCRUDState extends State<TouristCRUD> {
   void getFiltered(
       Set<Gender> genders, Set<SkillCategory> skillCategories) async {
     List<Tourist>? filtered =
-        await TouristApi().findAll(genders, skillCategories);
+        await TouristApi().findByGenderAndSkill(genders, skillCategories);
     if (filtered == null) {
       await Future.microtask(() {
         ServiceIO()

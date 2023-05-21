@@ -1,59 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:tourist_admin_panel/components/route_type_view.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
-import 'package:tourist_admin_panel/crud/forms/section_form.dart';
 
-import '../api/section_api.dart';
-import '../model/section.dart';
+import '../api/route_api.dart';
+import '../model/route.dart';
+import 'forms/route_form.dart';
 
-class SectionCRUD extends StatefulWidget {
-  const SectionCRUD(
+class RouteCRUD extends StatefulWidget {
+  const RouteCRUD(
       {super.key,
-      required this.sections,
-      this.onTap,
-      this.itemHoverColor,
-      required this.filtersFlex});
+        required this.items,
+        this.onTap,
+        this.itemHoverColor,
+        required this.filtersFlex});
 
-  final List<Section> sections;
-  final void Function(Section)? onTap;
+  final List<RouteTrip> items;
+  final void Function(RouteTrip)? onTap;
   final Color? itemHoverColor;
   final int filtersFlex;
 
   @override
-  State<SectionCRUD> createState() => _SectionCRUDState();
+  State<RouteCRUD> createState() => _RouteCRUDState();
 }
 
-class _SectionCRUDState extends State<SectionCRUD> {
-  List<Section> get sections => widget.sections;
+class _RouteCRUDState extends State<RouteCRUD> {
+  List<RouteTrip> get items => widget.items;
 
   @override
   Widget build(BuildContext context) {
-    return BaseCrud<Section>(
-        title: "Sections",
-        items: sections,
+    return BaseCrud<RouteTrip>(
+        title: "Routes",
+        items: items,
         columns: [
-          ColumnData<Section>(
+          ColumnData<RouteTrip>(
               name: "ID",
               buildColumnElem: (e) => centeredText(e.id.toString()),
               flex: 1),
-          ColumnData<Section>(
+          ColumnData<RouteTrip>(
               name: "Name",
               buildColumnElem: (e) => centeredText(e.name),
               flex: 3),
-          ColumnData<Section>(
-              name: "Manager",
-              buildColumnElem: (e) => centeredText('${e.sectionManager.firstName} ${e.sectionManager.secondName}'),
-              flex: 3),
+          ColumnData<RouteTrip>(
+              name: "Type",
+              buildColumnElem: (e) => RouteTypeView(routeType: e.routeType),
+              flex: 1)
         ],
         onTap: widget.onTap,
         itemHoverColor: widget.itemHoverColor,
-        crudApi: SectionApi(),
+        crudApi: RouteApi(),
         formBuilder: formBuilder,
         filters: buildFilters(),
         tailFlex: 1);
   }
 
-  Widget formBuilder({required Function(Section) onSubmit, Section? initial}) {
-    return SectionForm(
+  Widget formBuilder({required Function(RouteTrip) onSubmit, RouteTrip? initial}) {
+    return RouteForm(
       onSubmit: onSubmit,
       initial: initial,
     );

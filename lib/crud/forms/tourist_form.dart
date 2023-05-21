@@ -1,10 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
+import '../../api/group_api.dart';
 import '../../components/input_label.dart';
+import '../../components/simple_button.dart';
 import '../../config/config.dart';
+import '../../model/group.dart';
 import '../../services/service_io.dart';
+import '../base_crud_future_builder.dart';
+import '../group_crud.dart';
 
 class TouristForm extends StatefulWidget {
   const TouristForm({super.key, required this.onSubmit, this.initial});
@@ -21,6 +28,7 @@ class _TouristFormState extends State<TouristForm> {
   var firstNameController = TextEditingController();
   var secondNameController = TextEditingController();
   static const defaultBirthYear = 2000;
+  Group? currentGroup;
 
   String get postfix =>
       builder.gender == Gender.male ? "_male.png" : "_female.png";
@@ -32,6 +40,7 @@ class _TouristFormState extends State<TouristForm> {
       builder = TouristBuilder.fromExisting(widget.initial!);
       firstNameController.text = builder.firstName;
       secondNameController.text = builder.secondName;
+      currentGroup = builder.group;
       return;
     }
     builder.gender = Gender.male;
@@ -132,6 +141,42 @@ class _TouristFormState extends State<TouristForm> {
                   const SizedBox(
                     height: Config.defaultPadding,
                   ),
+                  SizedBox(
+                      width: 300,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: Image.asset("assets/images/group.png"),
+                          ),
+                          const SizedBox(
+                            width: Config.defaultPadding,
+                          ),
+                          SimpleButton(
+                              onPressed: selectGroup,
+                              color: Config.secondaryColor,
+                              text: currentGroup == null
+                                  ? "Select group"
+                                  : currentGroup!.name),
+                          Visibility(
+                            visible: currentGroup != null,
+                            child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    currentGroup = null;
+                                  });
+                                },
+                                tooltip: "Unselect group",
+                                icon: const Icon(
+                                  Icons.delete,
+                                  size: 25,
+                                  color: Colors.redAccent,
+                                )),
+                          )
+                        ],
+                      )),
                 ],
               )
             ],
@@ -181,15 +226,15 @@ class _TouristFormState extends State<TouristForm> {
             height: Config.pageHeight(context) * .2,
             width: 500,
             child: YearPicker(
-                  firstDate: DateTime(1940),
-                  lastDate: DateTime(2010),
-                  selectedDate: DateTime(builder.birthYear),
-                  currentDate: DateTime(builder.birthYear),
-                  onChanged: (date) {
-                    setState(() {
-                      builder.birthYear = date.year;
-                    });
-                  }),
+                firstDate: DateTime(1940),
+                lastDate: DateTime(2010),
+                selectedDate: DateTime(builder.birthYear),
+                currentDate: DateTime(builder.birthYear),
+                onChanged: (date) {
+                  setState(() {
+                    builder.birthYear = date.year;
+                  });
+                }),
           ),
           const SizedBox(
             height: Config.defaultPadding * 2,
@@ -212,6 +257,7 @@ class _TouristFormState extends State<TouristForm> {
                   )),
               ElevatedButton(
                   onPressed: () {
+                    builder.group = currentGroup;
                     builder.firstName = firstNameController.text;
                     builder.secondName = secondNameController.text;
                     if (builder.firstName.isEmpty) {
@@ -241,5 +287,29 @@ class _TouristFormState extends State<TouristForm> {
         ],
       ),
     );
+  }
+
+  void selectGroup() {
+    ServiceIO().showWidget(context,
+        barrierColor: Colors.transparent,
+        child: Container(
+            width: max(900, Config.pageWidth(context) * .5),
+            height: max(400, Config.pageHeight(context) * .5),
+            color: Config.bgColor.withOpacity(.99),
+            padding: Config.paddingAll,
+            alignment: Alignment.center,
+            child: ItemsFutureBuilder<Group>(
+              itemsGetter: GroupApi().getAll(),
+              contentBuilder: (items) => GroupCRUD(
+                items: items,
+                onTap: (s) {
+                  currentGroup = s;
+                  Navigator.of(context).pop();
+                  setState(() {});
+                },
+                filtersFlex: 1,
+                itemHoverColor: Colors.grey,
+              ),
+            )));
   }
 }

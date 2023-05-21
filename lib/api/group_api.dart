@@ -18,8 +18,7 @@ class GroupApi extends CRUDApi<Group> {
     return {
       "id": g.id,
       "name": g.name,
-      "trainer": TrainerApi.toMap(g.trainer),
-      "section": SectionApi.toMap(g.section)
+      "trainer": TrainerApi.toMap(g.trainer)
     };
   }
 
@@ -31,8 +30,7 @@ class GroupApi extends CRUDApi<Group> {
     return Group(
         id: json["id"],
         name: json["name"],
-        trainer: TrainerApi.fromJSON(json["trainer"]),
-        section: SectionApi.fromJSON(json["section"]));
+        trainer: TrainerApi.fromJSON(json["trainer"]));
   }
 
   @override

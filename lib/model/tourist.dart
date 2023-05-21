@@ -1,5 +1,7 @@
 import 'package:tourist_admin_panel/model/base_entity.dart';
 
+import 'group.dart';
+
 enum Gender { male, female }
 
 extension GenderExtension on Gender {
@@ -38,6 +40,7 @@ class TouristBuilder {
   late String secondName;
   late int birthYear;
   late SkillCategory skillCategory;
+  late Group? group;
 
   TouristBuilder();
 
@@ -48,6 +51,7 @@ class TouristBuilder {
     secondName = tourist.secondName;
     birthYear = tourist.birthYear;
     skillCategory = tourist.skillCategory;
+    group = tourist.group;
   }
 
   Tourist build() {
@@ -57,6 +61,7 @@ class TouristBuilder {
         firstName: firstName,
         secondName: secondName,
         birthYear: birthYear,
+        group: group,
         skillCategory: skillCategory);
   }
 }
@@ -68,6 +73,7 @@ class Tourist extends BaseEntity {
   final String secondName;
   final int birthYear;
   final SkillCategory skillCategory;
+  final Group? group;
 
   Tourist(
       {required this.id,
@@ -75,6 +81,7 @@ class Tourist extends BaseEntity {
       required this.firstName,
       required this.secondName,
       required this.birthYear,
+      this.group,
       required this.skillCategory});
 
   @override

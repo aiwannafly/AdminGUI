@@ -6,11 +6,11 @@ import 'package:tourist_admin_panel/crud/forms/section_manager_form.dart';
 import '../model/section_manager.dart';
 
 class SectionManagerCRUD extends StatefulWidget {
-  const SectionManagerCRUD({super.key, required this.sectionManagers, required this.onTap,
+  const SectionManagerCRUD({super.key, required this.sectionManagers, this.onTap,
   this.itemHoverColor, required this.filtersFlex});
 
   final List<SectionManager> sectionManagers;
-  final void Function(SectionManager) onTap;
+  final void Function(SectionManager)? onTap;
   final Color? itemHoverColor;
   final int filtersFlex;
 
@@ -34,12 +34,8 @@ class _SectionManagerCRUDState extends State<SectionManagerCRUD> {
               buildColumnElem: (e) => centeredText(e.id.toString()),
               flex: 1),
           ColumnData<SectionManager>(
-              name: "First name",
-              buildColumnElem: (e) => centeredText(e.firstName),
-              flex: 3),
-          ColumnData<SectionManager>(
-              name: "Second name",
-              buildColumnElem: (e) => centeredText(e.secondName),
+              name: "Name",
+              buildColumnElem: (e) => centeredText('${e.firstName} ${e.secondName}'),
               flex: 3),
           ColumnData<SectionManager>(
               name: "Salary, rub.",

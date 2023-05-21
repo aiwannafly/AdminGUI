@@ -1,70 +1,55 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
+import 'package:tourist_admin_panel/crud/forms/tourist_select_list.dart';
+import 'package:tourist_admin_panel/model/competition.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
-import '../../api/section_api.dart';
 import '../../api/tourist_api.dart';
-import '../../components/value_setter.dart';
+import '../../components/input_label.dart';
 import '../../config/config.dart';
-import '../../model/section.dart';
-import '../../model/trainer.dart';
 import '../../services/service_io.dart';
+import '../../utils.dart';
 import '../base_crud_future_builder.dart';
 import '../filters/tourist_filters.dart';
-import '../section_crud.dart';
-import '../tourist_crud.dart';
 
-class TrainerForm extends StatefulWidget {
-  const TrainerForm({super.key, required this.onSubmit, this.initial});
+class CompetitionForm extends StatefulWidget {
+  const CompetitionForm({super.key, required this.onSubmit, this.initial});
 
-  final Function(Trainer) onSubmit;
-  final Trainer? initial;
+  final Function(Competition) onSubmit;
+  final Competition? initial;
 
   @override
-  State<TrainerForm> createState() => _TrainerFormState();
+  State<CompetitionForm> createState() => _CompetitionFormState();
 }
 
-class _TrainerFormState extends State<TrainerForm> {
-  var builder = TrainerBuilder();
-  static const defaultSalary = 70000;
-  final salaryNotifier = ValueNotifier(defaultSalary);
-  Section? currentSection;
-  Tourist? currentTourist;
+class _CompetitionFormState extends State<CompetitionForm> {
+  var builder = CompetitionBuilder();
+  Set<Tourist> selected = HashSet();
+  var nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    salaryNotifier.addListener(updateSalary);
     if (widget.initial != null) {
-      builder = TrainerBuilder.fromExisting(widget.initial!);
-      currentSection = builder.section;
-      currentTourist = builder.tourist;
-      salaryNotifier.value = builder.salary;
+      builder = CompetitionBuilder.fromExisting(widget.initial!);
+      selected.addAll(builder.tourists);
+      nameController.text = builder.name;
       return;
     }
     builder.id = 0;
-    builder.salary = defaultSalary;
+    builder.date = DateTime.now();
   }
 
   @override
   void dispose() {
     super.dispose();
-    salaryNotifier.removeListener(updateSalary);
-  }
-
-  void updateSalary() {
-    builder.salary = salaryNotifier.value;
+    nameController.dispose();
   }
 
   String get actionName => widget.initial == null ? "Create" : "Update";
-
-  String get postfix => currentTourist == null
-      ? "_male.png"
-      : currentTourist!.gender == Gender.male
-          ? "_male.png"
-          : "_female.png";
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +64,7 @@ class _TrainerFormState extends State<TrainerForm> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "$actionName trainer",
+              "$actionName competition",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
@@ -98,16 +83,26 @@ class _TrainerFormState extends State<TrainerForm> {
                     width: 150,
                     child: ClipRRect(
                         borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/trainer.png")),
+                        child: Image.asset("assets/images/competition.png")),
                   )),
               const SizedBox(
-                width: Config.defaultPadding,
+                width: Config.defaultPadding * 3,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: Config.defaultPadding * 3,
+                    height: Config.defaultPadding,
+                  ),
+                  SizedBox(
+                    width: 300,
+                    child: InputLabel(
+                      controller: nameController,
+                      hintText: "Competition name",
+                    ),
+                  ),
+                  const SizedBox(
+                    height: Config.defaultPadding,
                   ),
                   SizedBox(
                       width: 300,
@@ -117,17 +112,16 @@ class _TrainerFormState extends State<TrainerForm> {
                           SizedBox(
                             height: 50,
                             width: 50,
-                            child: Image.asset("assets/images/tourist$postfix"),
+                            child: Image.asset("assets/images/group.png"),
                           ),
                           const SizedBox(
                             width: Config.defaultPadding,
                           ),
                           SimpleButton(
-                              onPressed: selectTourist,
+                              onPressed: selectTourists,
                               color: Config.secondaryColor,
-                              text: currentTourist == null
-                                  ? "Select person"
-                                  : "${currentTourist!.firstName} ${currentTourist!.secondName}")
+                              text: selected.isEmpty ? "Select participants" :
+                              "Selected ${selected.length} participants")
                         ],
                       )),
                   const SizedBox(
@@ -141,33 +135,22 @@ class _TrainerFormState extends State<TrainerForm> {
                           SizedBox(
                             height: 50,
                             width: 50,
-                            child: Image.asset("assets/images/section.png"),
+                            child: Image.asset("assets/images/time.png"),
                           ),
                           const SizedBox(
                             width: Config.defaultPadding,
                           ),
                           SimpleButton(
-                              onPressed: selectSection,
+                              onPressed: selectDate,
                               color: Config.secondaryColor,
-                              text: currentSection == null
-                                  ? "Select section"
-                                  : currentSection!.name)
+                              text: "Start date ${dateTimeToStr(builder.date)}")
                         ],
                       )),
                   const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
+                    height: Config.defaultPadding,)
                 ],
               )
             ],
-          ),
-          SliderTextSetter<int>(
-              minVal: 30000,
-              maxVal: 250000,
-              notifier: salaryNotifier,
-              leading: "Select salary"),
-          const SizedBox(
-            height: Config.defaultPadding,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,7 +161,7 @@ class _TrainerFormState extends State<TrainerForm> {
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
+                    MaterialStateProperty.all<Color>(Colors.red),
                   ),
                   child: Container(
                     padding: Config.paddingAll,
@@ -187,24 +170,24 @@ class _TrainerFormState extends State<TrainerForm> {
                   )),
               ElevatedButton(
                   onPressed: () {
-                    if (currentTourist == null) {
+                    builder.tourists = selected.toList();
+                    if (builder.tourists.isEmpty) {
                       ServiceIO()
-                          .showMessage("Tourist is not selected", context);
+                          .showMessage("Select tourists for the trip", context);
                       return;
                     }
-                    if (currentSection == null) {
+                    builder.name = nameController.text;
+                    if (builder.name.isEmpty) {
                       ServiceIO()
-                          .showMessage("Section is not selected", context);
+                          .showMessage("Name must not be empty", context);
                       return;
                     }
-                    builder.section = currentSection!;
-                    builder.tourist = currentTourist!;
                     Navigator.of(context).pop();
                     widget.onSubmit(builder.build());
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.green),
+                    MaterialStateProperty.all<Color>(Colors.green),
                   ),
                   child: Container(
                     padding: Config.paddingAll,
@@ -218,7 +201,20 @@ class _TrainerFormState extends State<TrainerForm> {
     );
   }
 
-  void selectTourist() {
+  void selectDate() async {
+    DateTime? newTime = await showDatePicker(
+        context: context,
+        initialDate: builder.date,
+        firstDate: DateTime(2023),
+        lastDate: DateTime(2024));
+    if (newTime != null) {
+      setState(() {
+        builder.date = newTime;
+      });
+    }
+  }
+
+  void selectTourists() {
     ServiceIO().showWidget(context,
         barrierColor: Colors.transparent,
         child: Container(
@@ -229,44 +225,23 @@ class _TrainerFormState extends State<TrainerForm> {
           alignment: Alignment.center,
           child: SingleChildScrollView(
             child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(TouristFilters.selectedGenders,
+              itemsGetter: TouristApi().findByGenderAndSkill(
+                  TouristFilters.selectedGenders,
                   TouristFilters.selectedSkillCategories),
-              contentBuilder: (tourists) => TouristCRUD(
+              contentBuilder: (tourists) => TouristSelectList(
                 tourists: tourists,
-                onTap: (s) {
-                  currentTourist = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
+                onDispose: () {
+                  Future.delayed(const Duration(milliseconds: 10), () {
+                    setState(() {
+                    });
+                  });
                 },
-                filtersFlex: 0,
+                filtersFlex: 2,
                 itemHoverColor: Colors.grey,
+                selected: selected,
               ),
             ),
           ),
         ));
-  }
-
-  void selectSection() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-            width: max(900, Config.pageWidth(context) * .5),
-            height: max(400, Config.pageHeight(context) * .5),
-            color: Config.bgColor.withOpacity(.99),
-            padding: Config.paddingAll,
-            alignment: Alignment.center,
-            child: ItemsFutureBuilder<Section>(
-              itemsGetter: SectionApi().getAll(),
-              contentBuilder: (sections) => SectionCRUD(
-                sections: sections,
-                onTap: (s) {
-                  currentSection = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                filtersFlex: 1,
-                itemHoverColor: Colors.grey,
-              ),
-            )));
   }
 }

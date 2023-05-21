@@ -8,12 +8,14 @@ class SelectorLabel<T> extends StatefulWidget {
       required this.items,
       required this.itemBuilder,
       required this.selectedItems,
-      required this.onChange});
+      required this.onChange,
+      this.selectedColor});
 
   final List<T> items;
   final Widget Function(T) itemBuilder;
   final Set<T> selectedItems;
   final VoidCallback onChange;
+  final Color? selectedColor;
 
   @override
   State<SelectorLabel<T>> createState() => _SelectorLabelState<T>();
@@ -29,7 +31,7 @@ class _SelectorLabelState<T> extends State<SelectorLabel<T>> {
     );
   }
 
-  Color get selectedColor => Config.secondaryColor.withOpacity(.5);
+  Color get selectedColor => widget.selectedColor?? Config.secondaryColor.withOpacity(.5);
 
   Color get defaultColor => Colors.indigo.withOpacity(0.1);
 

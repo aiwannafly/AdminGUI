@@ -1,42 +1,35 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:tourist_admin_panel/components/simple_button.dart';
-import 'package:tourist_admin_panel/model/section_manager.dart';
+import 'package:toggle_switch/toggle_switch.dart';
+import 'package:tourist_admin_panel/components/input_label.dart';
 
-import '../../api/section_manager_api.dart';
-import '../../components/input_label.dart';
 import '../../config/config.dart';
-import '../../model/section.dart';
+import '../../model/route.dart';
 import '../../services/service_io.dart';
-import '../base_crud_future_builder.dart';
-import '../section_manager_crud.dart';
 
-class SectionForm extends StatefulWidget {
-  const SectionForm({super.key, required this.onSubmit, this.initial});
+class RouteForm extends StatefulWidget {
+  const RouteForm({super.key, required this.onSubmit, this.initial});
 
-  final Function(Section) onSubmit;
-  final Section? initial;
+  final Function(RouteTrip) onSubmit;
+  final RouteTrip? initial;
 
   @override
-  State<SectionForm> createState() => _SectionFormState();
+  State<RouteForm> createState() => _RouteFormState();
 }
 
-class _SectionFormState extends State<SectionForm> {
-  var builder = SectionBuilder();
+class _RouteFormState extends State<RouteForm> {
+  var builder = RouteBuilder();
   var nameController = TextEditingController();
-  SectionManager? currentManager;
 
   @override
   void initState() {
     super.initState();
     if (widget.initial != null) {
-      builder = SectionBuilder.fromExisting(widget.initial!);
+      builder = RouteBuilder.fromExisting(widget.initial!);
       nameController.text = builder.name;
-      currentManager = builder.sectionManager;
       return;
     }
     builder.id = 0;
+    builder.routeType = RouteType.pedestrian;
   }
 
   String get actionName => widget.initial == null ? "Create" : "Update";
@@ -44,6 +37,7 @@ class _SectionFormState extends State<SectionForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 400,
       decoration: const BoxDecoration(
         borderRadius: Config.borderRadius,
         color: Config.bgColor,
@@ -54,7 +48,7 @@ class _SectionFormState extends State<SectionForm> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "$actionName section",
+              "$actionName route",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
@@ -73,7 +67,7 @@ class _SectionFormState extends State<SectionForm> {
                     width: 150,
                     child: ClipRRect(
                         borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/section.png")),
+                        child: Image.asset("assets/images/route.png")),
                   )),
               const SizedBox(
                 width: Config.defaultPadding,
@@ -82,36 +76,15 @@ class _SectionFormState extends State<SectionForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: Config.defaultPadding * 3,
+                    height: Config.defaultPadding,
                   ),
                   SizedBox(
-                      width: 300,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/manager.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectManager,
-                              color: Config.secondaryColor,
-                              text: currentManager == null
-                                  ? "Select section manager"
-                                  : "${currentManager!.firstName} ${currentManager!.secondName}")
-                        ],
-                      )),
-                  const SizedBox(
-                    height: Config.defaultPadding * 2,
+                    width: 300,
+                    child: InputLabel(
+                      controller: nameController,
+                      hintText: "Route name",
+                    ),
                   ),
-                  SizedBox(
-                      width: 300,
-                      child: InputLabel(
-                          controller: nameController,
-                          hintText: "Section name")),
                   const SizedBox(
                     height: Config.defaultPadding,
                   ),
@@ -119,9 +92,37 @@ class _SectionFormState extends State<SectionForm> {
               )
             ],
           ),
-          const SizedBox(
-            height: Config.defaultPadding,
+          Config.defaultText("Select route type"),
+          const SizedBox(height: Config.defaultPadding,),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: ToggleSwitch(
+              minWidth: 120,
+              initialLabelIndex: builder.routeType.index,
+              cornerRadius: Config.defaultRadius,
+              activeFgColor: Colors.black,
+              inactiveBgColor: Config.secondaryColor,
+              inactiveFgColor: Colors.white,
+              totalSwitches: RouteType.values.length,
+              animate: true,
+              animationDuration: 200,
+              labels: RouteType.values.map((e) => e.string).toList(),
+              activeBgColor: const [Colors.blue],
+              customTextStyles: List.filled(
+                  RouteType.values.length,
+                  TextStyle(
+                      fontFamily: "Montserrat",
+                      fontSize: 14,
+                      color: Colors.grey.shade200)),
+              onToggle: (index) {
+                if (index == null) return;
+                setState(() {
+                  builder.routeType = RouteType.values[index];
+                });
+              },
+            ),
           ),
+          const SizedBox(height: Config.defaultPadding,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -146,12 +147,6 @@ class _SectionFormState extends State<SectionForm> {
                           .showMessage("Name must not be empty", context);
                       return;
                     }
-                    if (currentManager == null) {
-                      ServiceIO().showMessage(
-                          "Section manager is not selected", context);
-                      return;
-                    }
-                    builder.sectionManager = currentManager!;
                     Navigator.of(context).pop();
                     widget.onSubmit(builder.build());
                   },
@@ -169,31 +164,5 @@ class _SectionFormState extends State<SectionForm> {
         ],
       ),
     );
-  }
-
-  void selectManager() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(900, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-              child: ItemsFutureBuilder<SectionManager>(
-            itemsGetter: SectionManagerApi().getAll(),
-            contentBuilder: (sectionManagers) => SectionManagerCRUD(
-              sectionManagers: sectionManagers,
-              onTap: (s) {
-                currentManager = s;
-                Navigator.of(context).pop();
-                setState(() {});
-              },
-              filtersFlex: 0,
-              itemHoverColor: Colors.grey,
-            ),
-          )),
-        ));
   }
 }

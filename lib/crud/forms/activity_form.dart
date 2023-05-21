@@ -1,74 +1,55 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:tourist_admin_panel/api/tourist_api.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
+import 'package:tourist_admin_panel/crud/forms/tourist_select_list.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/utils.dart';
 
-import '../../api/section_api.dart';
-import '../../api/tourist_api.dart';
-import '../../components/value_setter.dart';
+import '../../api/schedule_api.dart';
 import '../../config/config.dart';
-import '../../model/section.dart';
-import '../../model/trainer.dart';
+import '../../model/activity.dart';
+import '../../model/schedule.dart';
 import '../../services/service_io.dart';
 import '../base_crud_future_builder.dart';
-import '../filters/tourist_filters.dart';
-import '../section_crud.dart';
-import '../tourist_crud.dart';
+import '../schedule_crud.dart';
 
-class TrainerForm extends StatefulWidget {
-  const TrainerForm({super.key, required this.onSubmit, this.initial});
+class ActivityForm extends StatefulWidget {
+  const ActivityForm({super.key, required this.onSubmit, this.initial});
 
-  final Function(Trainer) onSubmit;
-  final Trainer? initial;
+  final Function(Activity) onSubmit;
+  final Activity? initial;
 
   @override
-  State<TrainerForm> createState() => _TrainerFormState();
+  State<ActivityForm> createState() => _ActivityFormState();
 }
 
-class _TrainerFormState extends State<TrainerForm> {
-  var builder = TrainerBuilder();
-  static const defaultSalary = 70000;
-  final salaryNotifier = ValueNotifier(defaultSalary);
-  Section? currentSection;
-  Tourist? currentTourist;
+class _ActivityFormState extends State<ActivityForm> {
+  var builder = ActivityBuilder();
+  Schedule? currentSchedule;
+  Set<Tourist> attended = HashSet();
 
   @override
   void initState() {
     super.initState();
-    salaryNotifier.addListener(updateSalary);
     if (widget.initial != null) {
-      builder = TrainerBuilder.fromExisting(widget.initial!);
-      currentSection = builder.section;
-      currentTourist = builder.tourist;
-      salaryNotifier.value = builder.salary;
+      builder = ActivityBuilder.fromExisting(widget.initial!);
+      currentSchedule = builder.schedule;
+      attended.addAll(builder.attended);
       return;
     }
     builder.id = 0;
-    builder.salary = defaultSalary;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    salaryNotifier.removeListener(updateSalary);
-  }
-
-  void updateSalary() {
-    builder.salary = salaryNotifier.value;
+    builder.date = DateTime.now();
   }
 
   String get actionName => widget.initial == null ? "Create" : "Update";
 
-  String get postfix => currentTourist == null
-      ? "_male.png"
-      : currentTourist!.gender == Gender.male
-          ? "_male.png"
-          : "_female.png";
-
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 700,
       decoration: const BoxDecoration(
         borderRadius: Config.borderRadius,
         color: Config.bgColor,
@@ -79,7 +60,7 @@ class _TrainerFormState extends State<TrainerForm> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "$actionName trainer",
+              "$actionName activity",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
@@ -98,7 +79,7 @@ class _TrainerFormState extends State<TrainerForm> {
                     width: 150,
                     child: ClipRRect(
                         borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/trainer.png")),
+                        child: Image.asset("assets/images/activity.png")),
                   )),
               const SizedBox(
                 width: Config.defaultPadding,
@@ -107,51 +88,49 @@ class _TrainerFormState extends State<TrainerForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: Config.defaultPadding * 3,
+                    height: Config.defaultPadding,
                   ),
                   SizedBox(
-                      width: 300,
+                      width: 350,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             height: 50,
                             width: 50,
-                            child: Image.asset("assets/images/tourist$postfix"),
+                            child: Image.asset("assets/images/group.png"),
                           ),
                           const SizedBox(
                             width: Config.defaultPadding,
                           ),
                           SimpleButton(
-                              onPressed: selectTourist,
+                              onPressed: selectSchedule,
                               color: Config.secondaryColor,
-                              text: currentTourist == null
-                                  ? "Select person"
-                                  : "${currentTourist!.firstName} ${currentTourist!.secondName}")
+                              text: currentSchedule == null
+                                  ? "Select schedule"
+                                  : "${currentSchedule!.group.name} ${currentSchedule!.dayOfWeek.string} ${timeOfDayToStr(currentSchedule!.timeOfDay)}")
                         ],
                       )),
                   const SizedBox(
                     height: Config.defaultPadding,
                   ),
                   SizedBox(
-                      width: 300,
+                      width: 350,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
                             height: 50,
                             width: 50,
-                            child: Image.asset("assets/images/section.png"),
+                            child: Image.asset("assets/images/time.png"),
                           ),
                           const SizedBox(
                             width: Config.defaultPadding,
                           ),
                           SimpleButton(
-                              onPressed: selectSection,
+                              onPressed: selectDate,
                               color: Config.secondaryColor,
-                              text: currentSection == null
-                                  ? "Select section"
-                                  : currentSection!.name)
+                              text: dateTimeToStr(builder.date))
                         ],
                       )),
                   const SizedBox(
@@ -161,11 +140,20 @@ class _TrainerFormState extends State<TrainerForm> {
               )
             ],
           ),
-          SliderTextSetter<int>(
-              minVal: 30000,
-              maxVal: 250000,
-              notifier: salaryNotifier,
-              leading: "Select salary"),
+          currentSchedule != null
+              ? Column(
+                  children: [
+                    Config.defaultText("Mark attendance"),
+                    const SizedBox(
+                      height: Config.defaultPadding,
+                    ),
+                    ItemsFutureBuilder<Tourist>(
+                        contentBuilder: buildTouristsSelector,
+                        itemsGetter: TouristApi()
+                            .findByGroup(groupId: currentSchedule!.group.id)),
+                  ],
+                )
+              : const SizedBox(),
           const SizedBox(
             height: Config.defaultPadding,
           ),
@@ -187,18 +175,13 @@ class _TrainerFormState extends State<TrainerForm> {
                   )),
               ElevatedButton(
                   onPressed: () {
-                    if (currentTourist == null) {
+                    if (currentSchedule == null) {
                       ServiceIO()
-                          .showMessage("Tourist is not selected", context);
+                          .showMessage("Schedule is not selected", context);
                       return;
                     }
-                    if (currentSection == null) {
-                      ServiceIO()
-                          .showMessage("Section is not selected", context);
-                      return;
-                    }
-                    builder.section = currentSection!;
-                    builder.tourist = currentTourist!;
+                    builder.attended = attended.toList();
+                    builder.schedule = currentSchedule!;
                     Navigator.of(context).pop();
                     widget.onSubmit(builder.build());
                   },
@@ -218,35 +201,31 @@ class _TrainerFormState extends State<TrainerForm> {
     );
   }
 
-  void selectTourist() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(TouristFilters.selectedGenders,
-                  TouristFilters.selectedSkillCategories),
-              contentBuilder: (tourists) => TouristCRUD(
-                tourists: tourists,
-                onTap: (s) {
-                  currentTourist = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                filtersFlex: 0,
-                itemHoverColor: Colors.grey,
-              ),
-            ),
-          ),
-        ));
+  Widget buildTouristsSelector(List<Tourist> tourists) {
+    return TouristSelectList(
+      tourists: tourists,
+      filtersFlex: 0,
+      modifiable: false,
+      hideFilters: true,
+      itemHoverColor: Colors.grey,
+      selected: attended,
+    );
   }
 
-  void selectSection() {
+  void selectDate() async {
+    DateTime? newTime = await showDatePicker(
+        context: context,
+        initialDate: builder.date,
+        firstDate: DateTime(2023),
+        lastDate: DateTime(2024));
+    if (newTime != null) {
+      setState(() {
+        builder.date = newTime;
+      });
+    }
+  }
+
+  void selectSchedule() {
     ServiceIO().showWidget(context,
         barrierColor: Colors.transparent,
         child: Container(
@@ -255,12 +234,12 @@ class _TrainerFormState extends State<TrainerForm> {
             color: Config.bgColor.withOpacity(.99),
             padding: Config.paddingAll,
             alignment: Alignment.center,
-            child: ItemsFutureBuilder<Section>(
-              itemsGetter: SectionApi().getAll(),
-              contentBuilder: (sections) => SectionCRUD(
-                sections: sections,
+            child: ItemsFutureBuilder<Schedule>(
+              itemsGetter: ScheduleApi().getAll(),
+              contentBuilder: (items) => ScheduleCRUD(
+                items: items,
                 onTap: (s) {
-                  currentSection = s;
+                  currentSchedule = s;
                   Navigator.of(context).pop();
                   setState(() {});
                 },
