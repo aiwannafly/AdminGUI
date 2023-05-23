@@ -20,22 +20,12 @@ class GroupBuilder {
 }
 
 class Group extends BaseEntity {
-  int id;
   final String name;
   final Trainer trainer;
 
   Group(
-      {required this.id,
+      {required super.id,
       required this.name,
       required this.trainer});
 
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

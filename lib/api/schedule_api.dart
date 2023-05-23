@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/group_api.dart';
@@ -10,12 +8,8 @@ class ScheduleApi extends CRUDApi<Schedule> {
   static final _crudApi = BaseCRUDApi<Schedule>(
       singleApiName: "schedule",
       multiApiName: "schedules",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
-
-  static String toJSON(Schedule s) {
-    return jsonEncode(toMap(s));
-  }
 
   static Map<String, dynamic> toMap(Schedule s) {
     return {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/api/section_manager_api.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
+import 'package:tourist_admin_panel/crud/filters/section_manager_filters.dart';
 import 'package:tourist_admin_panel/crud/forms/section_manager_form.dart';
 
 import '../model/section_manager.dart';
+import '../services/service_io.dart';
 
 class SectionManagerCRUD extends StatefulWidget {
   const SectionManagerCRUD({super.key, required this.sectionManagers, this.onTap,
@@ -21,6 +23,22 @@ class SectionManagerCRUD extends StatefulWidget {
 
 class _SectionManagerCRUDState extends State<SectionManagerCRUD> {
   List<SectionManager> get sectionManagers => widget.sectionManagers;
+
+  @override
+  void initState() {
+    super.initState();
+    SectionManagerFilters.ageRangeNotifier.addListener(getFiltered);
+    SectionManagerFilters.salaryRangeNotifier.addListener(getFiltered);
+    SectionManagerFilters.employmentYearNotifier.addListener(getFiltered);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SectionManagerFilters.ageRangeNotifier.removeListener(getFiltered);
+    SectionManagerFilters.salaryRangeNotifier.removeListener(getFiltered);
+    SectionManagerFilters.employmentYearNotifier.removeListener(getFiltered);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +89,30 @@ class _SectionManagerCRUDState extends State<SectionManagerCRUD> {
   }
 
   Widget buildFilters() {
-    return Expanded(flex: widget.filtersFlex, child: Container());
+    if (widget.filtersFlex == 0) return const SizedBox();
+    return Expanded(
+      flex: widget.filtersFlex,
+      child: Container(
+          margin: const EdgeInsets.only(top: 30),
+          child: SectionManagerFilters(
+            onChange: getFiltered,
+          )),
+    );
+  }
+
+  void getFiltered() async {
+    List<SectionManager>? filtered =
+    await SectionManagerApi().findByGenderAndAgeAndSalary();
+    if (filtered == null) {
+      await Future.microtask(() {
+        ServiceIO()
+            .showMessage("Could not search for these managers :/", context);
+      });
+      return;
+    }
+    setState(() {
+      sectionManagers.clear();
+      sectionManagers.addAll(filtered);
+    });
   }
 }

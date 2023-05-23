@@ -90,7 +90,8 @@ class _TouristCRUDState extends State<TouristCRUD> {
   }
 
   Widget buildFilters() {
-    return Expanded(
+    if (widget.filtersFlex == 0) return const SizedBox();
+    return Flexible(
       flex: widget.filtersFlex,
       child: Container(
           margin: const EdgeInsets.only(top: 30),

@@ -35,7 +35,6 @@ class TripBuilder {
 }
 
 class Trip extends BaseEntity {
-  int id;
   final RouteTrip route;
   final SkillCategory requiredSkillCategory;
   final Tourist instructor;
@@ -43,21 +42,11 @@ class Trip extends BaseEntity {
   final int durationDays;
   final DateTime startDate;
 
-  Trip({required this.id,
+  Trip({required super.id,
     required this.route,
     required this.requiredSkillCategory,
     required this.instructor,
     required this.tourists,
     required this.durationDays,
     required this.startDate});
-
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

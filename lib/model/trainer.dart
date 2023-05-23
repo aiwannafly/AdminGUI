@@ -23,24 +23,14 @@ class TrainerBuilder {
 }
 
 class Trainer extends BaseEntity {
-  int id;
   final int salary;
   final Section section;
   final Tourist tourist;
 
   Trainer(
-      {required this.id,
+      {required super.id,
       required this.salary,
       required this.section,
       required this.tourist});
 
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

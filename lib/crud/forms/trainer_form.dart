@@ -239,7 +239,7 @@ class _TrainerFormState extends State<TrainerForm> {
                   Navigator.of(context).pop();
                   setState(() {});
                 },
-                filtersFlex: 0,
+                filtersFlex: 1,
                 itemHoverColor: Colors.grey,
               ),
             ),
@@ -265,7 +265,7 @@ class _TrainerFormState extends State<TrainerForm> {
                   Navigator.of(context).pop();
                   setState(() {});
                 },
-                filtersFlex: 1,
+                filtersFlex: 0,
                 itemHoverColor: Colors.grey,
               ),
             )));

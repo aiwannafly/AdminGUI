@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum Position { left, center, right }
-
 class Config {
   static const defaultRadius = 8.0;
   static const borderRadius = BorderRadius.all(Radius.circular(defaultRadius));

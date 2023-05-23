@@ -23,24 +23,13 @@ class ActivityBuilder {
 }
 
 class Activity extends BaseEntity {
-  int id;
   final DateTime date;
   final Schedule schedule;
   final List<Tourist> attended;
 
   Activity(
-      {required this.id,
+      {required super.id,
       required this.date,
       required this.schedule,
       required this.attended});
-
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

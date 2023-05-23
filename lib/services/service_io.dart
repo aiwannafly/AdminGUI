@@ -1,8 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:toggle_switch/toggle_switch.dart';
-import 'package:tourist_admin_panel/components/input_label.dart';
-import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/components/simple_button.dart';
 
 import '../config/config.dart';
 
@@ -23,21 +20,35 @@ class ServiceIO {
   }
 
   Future showWidget(BuildContext context,
-      {required Widget child, Color barrierColor = Colors.black38}) async {
+      {required Widget child, Color barrierColor = Colors.black38, bool showDoneButton = true}) async {
     await showDialog(
         context: context,
         barrierColor: barrierColor,
         builder: (context) => AlertDialog(
-              elevation: 0,
-              backgroundColor: Config.bgColor,
-              alignment: Alignment.center,
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  child
-                ],
-              )
-            ));
+            elevation: 0,
+            backgroundColor: Config.bgColor,
+            alignment: Alignment.center,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(children: [
+                  child,
+                  Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Visibility(
+                        visible: showDoneButton,
+                        child: SimpleButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          color: Config.primaryColor,
+                          text: "Done",
+                        ),
+                      ))
+                ])
+              ],
+            )));
   }
 
   void showMessage(String text, BuildContext context,

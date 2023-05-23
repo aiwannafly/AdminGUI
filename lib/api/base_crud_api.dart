@@ -8,23 +8,22 @@ import 'api_fields.dart';
 class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
   final String singleApiName;
   final String multiApiName;
-  final String Function(T) toJSON;
+  final Map<String, dynamic> Function(T) toMap;
   final T Function(dynamic) fromJSON;
 
   BaseCRUDApi(
       {required this.singleApiName,
       required this.multiApiName,
-      required this.toJSON,
+      required this.toMap,
       required this.fromJSON});
 
   @override
   Future<int?> create(T value) async {
-    print(toJSON(value));
     var response = await http.post(Uri.parse('$apiUrl$singleApiName'),
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
         },
-        body: toJSON(value));
+        body: jsonEncode(toMap(value)));
     if (response.statusCode != 200) {
       return null;
     }
@@ -53,7 +52,7 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
             headers: {
               "Content-Type": "application/json; charset=UTF-8",
             },
-            body: toJSON(value));
+            body: jsonEncode(toMap(value)));
     return response.statusCode == 200;
   }
 

@@ -136,24 +136,31 @@ class _ActivityFormState extends State<ActivityForm> {
                   const SizedBox(
                     height: Config.defaultPadding,
                   ),
+                  SizedBox(
+                      width: 350,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: Image.asset("assets/images/group.png"),
+                          ),
+                          const SizedBox(
+                            width: Config.defaultPadding,
+                          ),
+                          SimpleButton(
+                              onPressed: selectTourists,
+                              color: Config.secondaryColor,
+                              text: attended.isEmpty
+                                  ? "Mark attendance"
+                                  : "Attended ${attended.length} students")
+                        ],
+                      )),
                 ],
               )
             ],
           ),
-          currentSchedule != null
-              ? Column(
-                  children: [
-                    Config.defaultText("Mark attendance"),
-                    const SizedBox(
-                      height: Config.defaultPadding,
-                    ),
-                    ItemsFutureBuilder<Tourist>(
-                        contentBuilder: buildTouristsSelector,
-                        itemsGetter: TouristApi()
-                            .findByGroup(groupId: currentSchedule!.group.id)),
-                  ],
-                )
-              : const SizedBox(),
           const SizedBox(
             height: Config.defaultPadding,
           ),
@@ -201,23 +208,40 @@ class _ActivityFormState extends State<ActivityForm> {
     );
   }
 
-  Widget buildTouristsSelector(List<Tourist> tourists) {
-    return TouristSelectList(
-      tourists: tourists,
-      filtersFlex: 0,
-      modifiable: false,
-      hideFilters: true,
-      itemHoverColor: Colors.grey,
-      selected: attended,
-    );
+  void selectTourists() {
+    ServiceIO().showWidget(context,
+        barrierColor: Colors.transparent,
+        child: Container(
+          width: max(1200, Config.pageWidth(context) * .5),
+          height: max(400, Config.pageHeight(context) * .5),
+          color: Config.bgColor.withOpacity(.99),
+          padding: Config.paddingAll,
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            child: ItemsFutureBuilder<Tourist>(
+              itemsGetter: TouristApi().findByGenderAndSkill(),
+              contentBuilder: (tourists) => TouristSelectList(
+                tourists: tourists,
+                onDispose: () {
+                  Future.delayed(const Duration(milliseconds: 10), () {
+                    setState(() {});
+                  });
+                },
+                filtersFlex: 2,
+                itemHoverColor: Colors.grey,
+                selected: attended,
+              ),
+            ),
+          ),
+        ));
   }
 
   void selectDate() async {
     DateTime? newTime = await showDatePicker(
         context: context,
         initialDate: builder.date,
-        firstDate: DateTime(2023),
-        lastDate: DateTime(2024));
+        firstDate: DateTime(builder.date.year - 1),
+        lastDate: DateTime(builder.date.year + 1));
     if (newTime != null) {
       setState(() {
         builder.date = newTime;
@@ -243,7 +267,7 @@ class _ActivityFormState extends State<ActivityForm> {
                   Navigator.of(context).pop();
                   setState(() {});
                 },
-                filtersFlex: 1,
+                filtersFlex: 0,
                 itemHoverColor: Colors.grey,
               ),
             )));

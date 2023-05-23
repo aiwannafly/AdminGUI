@@ -46,24 +46,14 @@ class ScheduleBuilder {
 }
 
 class Schedule extends BaseEntity {
-  int id;
   final Group group;
   final DayOfWeek dayOfWeek;
   final TimeOfDay timeOfDay;
 
   Schedule(
-      {required this.id,
+      {required super.id,
       required this.group,
       required this.dayOfWeek,
       required this.timeOfDay});
 
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

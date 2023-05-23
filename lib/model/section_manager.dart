@@ -31,7 +31,6 @@ class SectionManagerBuilder {
 }
 
 class SectionManager extends BaseEntity {
-  int id;
   final int birthYear;
   final int employmentYear;
   final String firstName;
@@ -39,20 +38,11 @@ class SectionManager extends BaseEntity {
   final int salary;
 
   SectionManager(
-      {required this.id,
+      {required super.id,
       required this.birthYear,
       required this.employmentYear,
       required this.firstName,
       required this.secondName,
       required this.salary});
 
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

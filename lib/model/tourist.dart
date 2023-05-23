@@ -67,7 +67,6 @@ class TouristBuilder {
 }
 
 class Tourist extends BaseEntity {
-  int id;
   final Gender gender;
   final String firstName;
   final String secondName;
@@ -76,7 +75,7 @@ class Tourist extends BaseEntity {
   final Group? group;
 
   Tourist(
-      {required this.id,
+      {required super.id,
       required this.gender,
       required this.firstName,
       required this.secondName,
@@ -84,13 +83,4 @@ class Tourist extends BaseEntity {
       this.group,
       required this.skillCategory});
 
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
 }

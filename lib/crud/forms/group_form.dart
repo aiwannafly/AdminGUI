@@ -227,7 +227,7 @@ class _GroupFormState extends State<GroupForm> {
                   Navigator.of(context).pop();
                   setState(() {});
                 },
-                filtersFlex: 1,
+                filtersFlex: 0,
                 itemHoverColor: Colors.grey,
               ),
             )));

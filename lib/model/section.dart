@@ -20,19 +20,8 @@ class SectionBuilder {
 }
 
 class Section extends BaseEntity {
-  int id;
   final String name;
   final SectionManager sectionManager;
 
-  Section({required this.id, required this.name, required this.sectionManager});
-
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
+  Section({required super.id, required this.name, required this.sectionManager});
 }

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/section_manager_api.dart';
@@ -10,12 +8,8 @@ class SectionApi extends CRUDApi<Section> {
   static final _crudApi = BaseCRUDApi<Section>(
       singleApiName: "section",
       multiApiName: "sections",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
-
-  static String toJSON(Section s) {
-    return jsonEncode(toMap(s));
-  }
 
   static Map<String, dynamic> toMap(Section s) {
     return {

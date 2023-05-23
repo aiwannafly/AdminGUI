@@ -1,12 +1,12 @@
 import 'package:tourist_admin_panel/model/base_entity.dart';
+import 'package:tourist_admin_panel/model/place.dart';
 
 enum RouteType { pedestrian, mounted, mountain, water }
 
 extension RouteTypeExtension on RouteType {
   static RouteType fromString(String s) {
     s = s.toLowerCase();
-    return RouteType.values
-        .firstWhere((e) => e.toString() == 'RouteType.$s');
+    return RouteType.values.firstWhere((e) => e.toString() == 'RouteType.$s');
   }
 
   String get string {
@@ -18,6 +18,8 @@ class RouteBuilder {
   late int id;
   late String name;
   late RouteType routeType;
+  late int lengthKm;
+  late List<Place> places;
 
   RouteBuilder();
 
@@ -25,27 +27,30 @@ class RouteBuilder {
     id = r.id;
     name = r.name;
     routeType = r.routeType;
+    lengthKm = r.lengthKm;
+    places = r.places;
   }
 
   RouteTrip build() {
-    return RouteTrip(id: id, name: name, routeType: routeType);
+    return RouteTrip(
+        id: id,
+        name: name,
+        routeType: routeType,
+        lengthKm: lengthKm,
+        places: places);
   }
 }
 
 class RouteTrip extends BaseEntity {
-  int id;
   final String name;
   final RouteType routeType;
+  final int lengthKm;
+  final List<Place> places;
 
-  RouteTrip({required this.id, required this.name, required this.routeType});
-
-  @override
-  int getId() {
-    return id;
-  }
-
-  @override
-  void setId(int id) {
-    this.id = id;
-  }
+  RouteTrip(
+      {required super.id,
+      required this.name,
+      required this.routeType,
+      required this.lengthKm,
+      required this.places});
 }

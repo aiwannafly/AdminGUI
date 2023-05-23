@@ -12,7 +12,7 @@ class TripApi extends CRUDApi<Trip> {
   static final _crudApi = BaseCRUDApi<Trip>(
       singleApiName: "trip",
       multiApiName: "trips",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
 
   static Map<String, dynamic> toMap(Trip t) {
@@ -25,10 +25,6 @@ class TripApi extends CRUDApi<Trip> {
       "durationDays": t.durationDays,
       "requiredSkillCategory": t.requiredSkillCategory.string.toUpperCase()
     };
-  }
-
-  static String toJSON(Trip t) {
-    return jsonEncode(toMap(t));
   }
 
   static Trip fromJSON(dynamic json) {

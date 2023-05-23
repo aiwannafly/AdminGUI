@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/schedule_api.dart';
 import 'package:tourist_admin_panel/api/tourist_api.dart';
@@ -13,7 +11,7 @@ class ActivityApi extends CRUDApi<Activity> {
   static final _crudApi = BaseCRUDApi<Activity>(
       singleApiName: "activity",
       multiApiName: "activities",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
 
   static Map<String, dynamic> toMap(Activity a) {
@@ -23,10 +21,6 @@ class ActivityApi extends CRUDApi<Activity> {
       "date": dateTimeToStr(a.date),
       "attended": a.attended.map((e) => TouristApi.toMap(e)).toList()
     };
-  }
-
-  static String toJSON(Activity a) {
-    return jsonEncode(toMap(a));
   }
 
   static Activity fromJSON(dynamic json) {

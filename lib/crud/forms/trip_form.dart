@@ -325,15 +325,17 @@ class _TripFormState extends State<TripForm> {
           child: SingleChildScrollView(
             child: ItemsFutureBuilder<Tourist>(
               itemsGetter: TouristApi().findByGenderAndSkill(),
-              contentBuilder: (tourists) => TouristCRUD(
-                tourists: tourists,
-                onTap: (s) {
-                  currInstructor = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                filtersFlex: 0,
-                itemHoverColor: Colors.grey,
+              contentBuilder: (tourists) => SizedBox(
+                child: TouristCRUD(
+                  tourists: tourists,
+                  onTap: (s) {
+                    currInstructor = s;
+                    Navigator.of(context).pop();
+                    setState(() {});
+                  },
+                  filtersFlex: 1,
+                  itemHoverColor: Colors.grey,
+                ),
               ),
             ),
           ),

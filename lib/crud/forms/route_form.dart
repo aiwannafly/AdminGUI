@@ -1,10 +1,20 @@
+import 'dart:collection';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:tourist_admin_panel/components/input_label.dart';
+import 'package:tourist_admin_panel/crud/crud_config.dart';
+import 'package:tourist_admin_panel/crud/forms/place_select_list.dart';
 
+import '../../api/place_api.dart';
+import '../../components/simple_button.dart';
+import '../../components/slider_text_setter.dart';
 import '../../config/config.dart';
+import '../../model/place.dart';
 import '../../model/route.dart';
 import '../../services/service_io.dart';
+import '../base_crud_future_builder.dart';
 
 class RouteForm extends StatefulWidget {
   const RouteForm({super.key, required this.onSubmit, this.initial});
@@ -19,17 +29,33 @@ class RouteForm extends StatefulWidget {
 class _RouteFormState extends State<RouteForm> {
   var builder = RouteBuilder();
   var nameController = TextEditingController();
+  final lengthNotifier = ValueNotifier(defaultLengthKm);
+  final Set<Place> selected = HashSet();
 
   @override
   void initState() {
     super.initState();
+    lengthNotifier.addListener(updateLengthKm);
     if (widget.initial != null) {
       builder = RouteBuilder.fromExisting(widget.initial!);
       nameController.text = builder.name;
+      lengthNotifier.value = builder.lengthKm;
+      selected.addAll(builder.places);
       return;
     }
     builder.id = 0;
+    builder.lengthKm = defaultLengthKm;
     builder.routeType = RouteType.pedestrian;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    lengthNotifier.removeListener(updateLengthKm);
+  }
+
+  void updateLengthKm() {
+    builder.lengthKm = lengthNotifier.value;
   }
 
   String get actionName => widget.initial == null ? "Create" : "Update";
@@ -37,7 +63,6 @@ class _RouteFormState extends State<RouteForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 400,
       decoration: const BoxDecoration(
         borderRadius: Config.borderRadius,
         color: Config.bgColor,
@@ -86,14 +111,36 @@ class _RouteFormState extends State<RouteForm> {
                     ),
                   ),
                   const SizedBox(
-                    height: Config.defaultPadding,
+                    height: Config.defaultPadding * 2,
                   ),
+                  SizedBox(
+                      width: 300,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: Image.asset("assets/images/place.png"),
+                          ),
+                          const SizedBox(
+                            width: Config.defaultPadding,
+                          ),
+                          SimpleButton(
+                              onPressed: selectPlaces,
+                              color: Config.secondaryColor,
+                              text: selected.isEmpty ? "Select places" :
+                              "Selected ${selected.length} places")
+                        ],
+                      )),
                 ],
               )
             ],
           ),
           Config.defaultText("Select route type"),
-          const SizedBox(height: Config.defaultPadding,),
+          const SizedBox(
+            height: Config.defaultPadding,
+          ),
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: ToggleSwitch(
@@ -122,7 +169,21 @@ class _RouteFormState extends State<RouteForm> {
               },
             ),
           ),
-          const SizedBox(height: Config.defaultPadding,),
+          const SizedBox(
+            height: Config.defaultPadding,
+          ),
+          SizedBox(
+            width: 400,
+            child: SliderTextSetter<int>(
+                minVal: minLengthKm,
+                maxVal: maxLengthKm,
+                divisions: (maxLengthKm - minLengthKm),
+                notifier: lengthNotifier,
+                leading: "Select length in km."),
+          ),
+          const SizedBox(
+            height: Config.defaultPadding,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -147,6 +208,7 @@ class _RouteFormState extends State<RouteForm> {
                           .showMessage("Name must not be empty", context);
                       return;
                     }
+                    builder.places = selected.toList();
                     Navigator.of(context).pop();
                     widget.onSubmit(builder.build());
                   },
@@ -164,5 +226,33 @@ class _RouteFormState extends State<RouteForm> {
         ],
       ),
     );
+  }
+
+  void selectPlaces() {
+    ServiceIO().showWidget(context,
+        barrierColor: Colors.transparent,
+        child: Container(
+          width: max(1200, Config.pageWidth(context) * .5),
+          color: Config.bgColor.withOpacity(.99),
+          padding: Config.paddingAll,
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            child: ItemsFutureBuilder<Place>(
+              itemsGetter: PlaceApi().getAll(),
+              contentBuilder: (items) => PlaceSelectList(
+                places: items,
+                onDispose: () {
+                  Future.delayed(const Duration(milliseconds: 10), () {
+                    setState(() {
+                    });
+                  });
+                },
+                filtersFlex: 0,
+                itemHoverColor: Colors.grey,
+                selected: selected,
+              ),
+            ),
+          ),
+        ));
   }
 }

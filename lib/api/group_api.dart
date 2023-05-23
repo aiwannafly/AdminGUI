@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/trainer_api.dart';
-import 'package:tourist_admin_panel/api/section_api.dart';
 
 import '../model/group.dart';
 
@@ -11,7 +8,7 @@ class GroupApi extends CRUDApi<Group> {
   static final _crudApi = BaseCRUDApi<Group>(
       singleApiName: "group",
       multiApiName: "groups",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
 
   static Map<String, dynamic> toMap(Group g) {
@@ -20,10 +17,6 @@ class GroupApi extends CRUDApi<Group> {
       "name": g.name,
       "trainer": TrainerApi.toMap(g.trainer)
     };
-  }
-
-  static String toJSON(Group g) {
-    return jsonEncode(toMap(g));
   }
 
   static Group fromJSON(dynamic json) {

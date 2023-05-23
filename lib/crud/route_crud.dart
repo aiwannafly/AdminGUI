@@ -41,6 +41,10 @@ class _RouteCRUDState extends State<RouteCRUD> {
               buildColumnElem: (e) => centeredText(e.name),
               flex: 3),
           ColumnData<RouteTrip>(
+              name: "Length, km.",
+              buildColumnElem: (e) => centeredText(e.lengthKm.toString()),
+              flex: 2),
+          ColumnData<RouteTrip>(
               name: "Type",
               buildColumnElem: (e) => RouteTypeView(routeType: e.routeType),
               flex: 1)
@@ -70,6 +74,7 @@ class _RouteCRUDState extends State<RouteCRUD> {
   }
 
   Widget buildFilters() {
+    if (widget.filtersFlex == 0) return const SizedBox();
     return Expanded(flex: widget.filtersFlex, child: Container());
   }
 }

@@ -16,12 +16,8 @@ class TrainerApi extends CRUDApi<Trainer> {
   static final _crudApi = BaseCRUDApi<Trainer>(
       singleApiName: "trainer",
       multiApiName: "trainers",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
-
-  static String toJSON(Trainer t) {
-    return jsonEncode(toMap(t));
-  }
 
   static Trainer fromJSON(dynamic json) {
     return Trainer(

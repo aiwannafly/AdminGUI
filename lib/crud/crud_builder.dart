@@ -22,7 +22,6 @@ import 'package:tourist_admin_panel/api/section_api.dart';
 import 'package:tourist_admin_panel/api/section_manager_api.dart';
 import 'package:tourist_admin_panel/api/tourist_api.dart';
 import 'package:tourist_admin_panel/crud/base_crud_future_builder.dart';
-import 'package:tourist_admin_panel/crud/filters/tourist_filters.dart';
 import 'package:tourist_admin_panel/crud/section_crud.dart';
 import 'package:tourist_admin_panel/crud/tourist_crud.dart';
 import 'package:tourist_admin_panel/model/group.dart';
@@ -77,7 +76,7 @@ extension CRUDBuilder on CRUD {
           itemsGetter: GroupApi().getAll(),
           contentBuilder: (items) => GroupCRUD(
             items: items,
-            filtersFlex: 1,
+            filtersFlex: 3,
           ),
         ),
       CRUD.sections => ItemsFutureBuilder<Section>(
@@ -95,10 +94,10 @@ extension CRUDBuilder on CRUD {
           ),
         ),
       CRUD.sectionManagers => ItemsFutureBuilder<SectionManager>(
-          itemsGetter: SectionManagerApi().getAll(),
+          itemsGetter: SectionManagerApi().findByGenderAndAgeAndSalary(),
           contentBuilder: (sectionManagers) => SectionManagerCRUD(
             sectionManagers: sectionManagers,
-            filtersFlex: 1,
+            filtersFlex: 2,
           ),
         ),
       CRUD.schedules => ItemsFutureBuilder<Schedule>(
@@ -112,14 +111,14 @@ extension CRUDBuilder on CRUD {
           itemsGetter: ActivityApi().getAll(),
           contentBuilder: (items) => ActivityCRUD(
             items: items,
-            filtersFlex: 1,
+            filtersFlex: 2,
           ),
         ),
       CRUD.routes => ItemsFutureBuilder<RouteTrip>(
           itemsGetter: RouteApi().getAll(),
           contentBuilder: (items) => RouteCRUD(
             items: items,
-            filtersFlex: 1,
+            filtersFlex: 3,
           ),
         ),
       CRUD.trips => ItemsFutureBuilder<Trip>(
@@ -133,7 +132,7 @@ extension CRUDBuilder on CRUD {
           itemsGetter: CompetitionApi().getAll(),
           contentBuilder: (items) => CompetitionCRUD(
             items: items,
-            filtersFlex: 1,
+            filtersFlex: 3,
           ),
         )
     };

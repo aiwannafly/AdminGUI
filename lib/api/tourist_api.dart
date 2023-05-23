@@ -15,7 +15,7 @@ class TouristApi extends CRUDApi<Tourist> {
   static final _crudApi = BaseCRUDApi<Tourist>(
       singleApiName: "tourist",
       multiApiName: "tourists",
-      toJSON: toJSON,
+      toMap: toMap,
       fromJSON: fromJSON);
 
   factory TouristApi() {
@@ -57,8 +57,9 @@ class TouristApi extends CRUDApi<Tourist> {
     String skillsStr = skillCategories
         .fold("", (prev, curr) => "$prev,${curr.string}")
         .substring(1);
-    var response = await http.get(Uri.parse(
-        '${apiUrl}search/tourists?genders=$gendersStr&skillCategories=$skillsStr&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'));
+    var response = await http.get(
+        Uri.parse(
+            '${apiUrl}search/tourists?genders=$gendersStr&skillCategories=$skillsStr&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'));
     if (response.statusCode != 200) {
       return null;
     }
@@ -74,10 +75,6 @@ class TouristApi extends CRUDApi<Tourist> {
   @override
   Future<int?> create(Tourist value) async {
     return _crudApi.create(value);
-  }
-
-  static String toJSON(Tourist tourist) {
-    return jsonEncode(toMap(tourist));
   }
 
   static Map<String, dynamic> toMap(Tourist tourist) {
