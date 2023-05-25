@@ -46,6 +46,10 @@ class _ActivityCRUDState extends State<ActivityCRUD> {
                   "${e.schedule.group.trainer.tourist.firstName} ${e.schedule.group.trainer.tourist.secondName}"),
               flex: 2),
           ColumnData<Activity>(
+              name: "Duration, mins",
+              buildColumnElem: (e) => centeredText(e.schedule.durationMins.toString()),
+              flex: 2),
+          ColumnData<Activity>(
               name: "Date",
               buildColumnElem: (e) => centeredText(dateTimeToStr(e.date)),
               flex: 2)
@@ -68,7 +72,7 @@ class _ActivityCRUDState extends State<ActivityCRUD> {
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium,
-      ),
+      )
     );
   }
 

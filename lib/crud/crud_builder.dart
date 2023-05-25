@@ -104,7 +104,7 @@ extension CRUDBuilder on CRUD {
           itemsGetter: ScheduleApi().getAll(),
           contentBuilder: (items) => ScheduleCRUD(
             items: items,
-            filtersFlex: 1,
+            filtersFlex: 0,
           ),
         ),
       CRUD.activities => ItemsFutureBuilder<Activity>(

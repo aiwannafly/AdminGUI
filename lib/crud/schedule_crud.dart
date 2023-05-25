@@ -49,6 +49,10 @@ class _ScheduleCRUDState extends State<ScheduleCRUD> {
               buildColumnElem: (e) => centeredText('${e.group.trainer.tourist.firstName} ${e.group.trainer.tourist.secondName}'),
               flex: 3),
           ColumnData<Schedule>(
+              name: "Duration, mins",
+              buildColumnElem: (e) => centeredText(e.durationMins.toString()),
+              flex: 2),
+          ColumnData<Schedule>(
               name: "Day of week",
               buildColumnElem: (e) => centeredText(e.dayOfWeek.string),
               flex: 2),

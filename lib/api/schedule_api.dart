@@ -16,6 +16,7 @@ class ScheduleApi extends CRUDApi<Schedule> {
       "id": s.id,
       "group": GroupApi.toMap(s.group),
       "dayOfWeek": s.dayOfWeek.string,
+      "durationMins": s.durationMins,
       "timeOfDay": "${timeOfDayToStr(s.timeOfDay)}:00"
     };
   }
@@ -23,6 +24,7 @@ class ScheduleApi extends CRUDApi<Schedule> {
   static Schedule fromJSON(dynamic json) {
     return Schedule(
         id: json["id"],
+        durationMins: json["durationMins"],
         group: GroupApi.fromJSON(json["group"]),
         dayOfWeek: DayOfWeekExtension.fromString(json["dayOfWeek"]),
         timeOfDay: timeOfDayFromStr(json["timeOfDay"]));

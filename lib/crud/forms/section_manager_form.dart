@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/components/slider_text_setter.dart';
 import 'package:tourist_admin_panel/crud/crud_config.dart';
+import 'package:tourist_admin_panel/crud/forms/base_form.dart';
 import 'package:tourist_admin_panel/model/section_manager.dart';
 
 import '../../components/input_label.dart';
@@ -57,39 +59,15 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: Config.borderRadius,
-          color: Config.bgColor,
-        ),
-        padding: Config.paddingAll,
-        child: Column(
+    return BaseForm(
+        buildEntity: buildEntity,
+        entityName: "section manager",
+        body: Column(
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "$actionName section manager",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(
-              height: Config.defaultPadding,
-            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                    height: 200,
-                    width: 200,
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      height: 150,
-                      width: 150,
-                      child: ClipRRect(
-                          borderRadius: Config.borderRadius,
-                          child: Image.asset("assets/images/manager.png")),
-                    )),
+                const ImageBox(imageName: "manager.png"),
                 const SizedBox(
                   width: Config.defaultPadding,
                 ),
@@ -172,56 +150,22 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
                     });
                   }),
             ),
-            const SizedBox(
-              height: Config.defaultPadding,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.red),
-                    ),
-                    child: Container(
-                      padding: Config.paddingAll,
-                      child: Text("Cancel",
-                          style: Theme.of(context).textTheme.titleMedium),
-                    )),
-                ElevatedButton(
-                    onPressed: () {
-                      builder.firstName = firstNameController.text;
-                      builder.secondName = secondNameController.text;
-                      if (builder.firstName.isEmpty) {
-                        ServiceIO().showMessage(
-                            "First name must not be empty", context);
-                        return;
-                      }
-                      if (builder.secondName.isEmpty) {
-                        ServiceIO().showMessage(
-                            "Second name must not be empty", context);
-                        return;
-                      }
-                      Navigator.of(context).pop();
-                      widget.onSubmit(builder.build());
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green),
-                    ),
-                    child: Container(
-                      padding: Config.paddingAll,
-                      child: Text(actionName,
-                          style: Theme.of(context).textTheme.titleMedium),
-                    )),
-              ],
-            )
           ],
-        ),
-      ),
-    );
+        ));
+  }
+
+  void buildEntity() {
+    builder.firstName = firstNameController.text;
+    builder.secondName = secondNameController.text;
+    if (builder.firstName.isEmpty) {
+      ServiceIO().showMessage("First name must not be empty", context);
+      return;
+    }
+    if (builder.secondName.isEmpty) {
+      ServiceIO().showMessage("Second name must not be empty", context);
+      return;
+    }
+    Navigator.of(context).pop();
+    widget.onSubmit(builder.build());
   }
 }

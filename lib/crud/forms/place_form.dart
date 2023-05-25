@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:map_picker_free/map_picker_free.dart';
+import 'package:tourist_admin_panel/components/image_box.dart';
+import 'package:tourist_admin_panel/components/image_button.dart';
 import 'package:tourist_admin_panel/components/input_label.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
+import 'package:tourist_admin_panel/crud/forms/base_form.dart';
 import 'package:tourist_admin_panel/model/place.dart';
 
 import '../../config/config.dart';
@@ -41,133 +44,59 @@ class _PlaceFormState extends State<PlaceForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 400,
-      decoration: const BoxDecoration(
-        borderRadius: Config.borderRadius,
-        color: Config.bgColor,
-      ),
-      padding: Config.paddingAll,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "$actionName place",
-              style: Theme.of(context).textTheme.titleLarge,
+    return BaseForm(
+        buildEntity: buildEntity,
+        entityName: "place",
+        body: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const ImageBox(imageName: "place.png"),
+            const SizedBox(
+              width: Config.defaultPadding,
             ),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                  height: 200,
-                  width: 200,
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: ClipRRect(
-                        borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/place.png")),
-                  )),
-              const SizedBox(
-                width: Config.defaultPadding,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: Config.defaultPadding,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: Config.defaultPadding,
+                ),
+                SizedBox(
+                  width: 300,
+                  child: InputLabel(
+                    controller: nameController,
+                    hintText: "Place name",
                   ),
-                  SizedBox(
-                    width: 300,
-                    child: InputLabel(
-                      controller: nameController,
-                      hintText: "Place name",
-                    ),
-                  ),
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/map.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                            onPressed: pickPlace,
-                            text: currLatLong == null
-                                ? "Select on map"
-                                : "${currLatLong!.latitude.toStringAsFixed(3)} ${currLatLong!.longitude.toStringAsFixed(3)}",
-                            color: Config.secondaryColor,
-                          ),
-                        ],
-                      )),
-                ],
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                  ),
-                  child: Container(
-                    padding: Config.paddingAll,
-                    child: Text("Cancel",
-                        style: Theme.of(context).textTheme.titleMedium),
-                  )),
-              ElevatedButton(
-                  onPressed: () {
-                    builder.name = nameController.text;
-                    if (builder.name.isEmpty) {
-                      ServiceIO()
-                          .showMessage("Name must not be empty", context);
-                      return;
-                    }
-                    if (currLatLong == null) {
-                      ServiceIO()
-                          .showMessage("Select the place on a map", context);
-                      return;
-                    }
-                    builder.address = currAddress!;
-                    builder.longitude = currLatLong!.longitude;
-                    builder.latitude = currLatLong!.latitude;
-                    Navigator.of(context).pop();
-                    widget.onSubmit(builder.build());
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                  child: Container(
-                    padding: Config.paddingAll,
-                    child: Text(actionName,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
+                ),
+                const SizedBox(
+                  height: Config.defaultPadding,
+                ),
+                ImageButton(
+                    onPressed: pickPlace,
+                    text: currLatLong == null
+                        ? "Select on map"
+                        : "${currLatLong!.latitude.toStringAsFixed(3)} ${currLatLong!.longitude.toStringAsFixed(3)}",
+                    imageName: "map.png")
+              ],
+            ),
+          ],
+        ));
+  }
+
+  void buildEntity() {
+    builder.name = nameController.text;
+    if (builder.name.isEmpty) {
+      ServiceIO().showMessage("Name must not be empty", context);
+      return;
+    }
+    if (currLatLong == null) {
+      ServiceIO().showMessage("Select the place on a map", context);
+      return;
+    }
+    builder.address = currAddress!;
+    builder.longitude = currLatLong!.longitude;
+    builder.latitude = currLatLong!.latitude;
+    Navigator.of(context).pop();
+    widget.onSubmit(builder.build());
   }
 
   Future<Position> _determinePosition() async {
@@ -220,12 +149,10 @@ class _PlaceFormState extends State<PlaceForm> {
                   currLatLong = pickedData.latLong;
                   currAddress = pickedData.address;
                   Navigator.of(context).pop();
-                  setState(() {
-                  });
+                  setState(() {});
                 }),
           ));
     });
-    setState(() {
-    });
+    setState(() {});
   }
 }

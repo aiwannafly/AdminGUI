@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/components/route_type_view.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
+import 'package:tourist_admin_panel/crud/filters/route_filters.dart';
 
 import '../api/route_api.dart';
 import '../model/route.dart';
@@ -9,10 +10,10 @@ import 'forms/route_form.dart';
 class RouteCRUD extends StatefulWidget {
   const RouteCRUD(
       {super.key,
-        required this.items,
-        this.onTap,
-        this.itemHoverColor,
-        required this.filtersFlex});
+      required this.items,
+      this.onTap,
+      this.itemHoverColor,
+      required this.filtersFlex});
 
   final List<RouteTrip> items;
   final void Function(RouteTrip)? onTap;
@@ -57,7 +58,8 @@ class _RouteCRUDState extends State<RouteCRUD> {
         tailFlex: 1);
   }
 
-  Widget formBuilder({required Function(RouteTrip) onSubmit, RouteTrip? initial}) {
+  Widget formBuilder(
+      {required Function(RouteTrip) onSubmit, RouteTrip? initial}) {
     return RouteForm(
       onSubmit: onSubmit,
       initial: initial,
@@ -75,6 +77,10 @@ class _RouteCRUDState extends State<RouteCRUD> {
 
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
-    return Expanded(flex: widget.filtersFlex, child: Container());
+    return Expanded(
+        flex: widget.filtersFlex,
+        child: RouteFilters(
+          shownRoutes: items,
+        ));
   }
 }

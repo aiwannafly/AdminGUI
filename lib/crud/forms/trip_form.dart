@@ -3,13 +3,17 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
+import 'package:tourist_admin_panel/crud/forms/base_form.dart';
 import 'package:tourist_admin_panel/crud/forms/tourist_select_list.dart';
+import 'package:tourist_admin_panel/crud/selector.dart';
 import 'package:tourist_admin_panel/model/route.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
 import '../../api/route_api.dart';
 import '../../api/tourist_api.dart';
+import '../../components/image_button.dart';
 import '../../components/slider_text_setter.dart';
 import '../../config/config.dart';
 import '../../model/trip.dart';
@@ -70,247 +74,134 @@ class _TripFormState extends State<TripForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: Config.borderRadius,
-        color: Config.bgColor,
-      ),
-      padding: Config.paddingAll,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "$actionName trip",
-              style: Theme.of(context).textTheme.titleLarge,
+    return BaseForm(
+        buildEntity: buildEntity,
+        entityName: "trip",
+        body: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ImageBox(imageName: "trip.png"),
+                const SizedBox(
+                  width: Config.defaultPadding * 3,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: Config.defaultPadding,
+                    ),
+                    ImageButton(
+                        onPressed: selectInstructor,
+                        imageName: "trainer.png",
+                        text: currInstructor == null
+                            ? "Select instructor"
+                            : "${currInstructor!.firstName} ${currInstructor!.secondName}"),
+                    const SizedBox(
+                      height: Config.defaultPadding,
+                    ),
+                    ImageButton(
+                        onPressed: selectRoute,
+                        imageName: "route.png",
+                        text: currentRoute == null
+                            ? "Select route"
+                            : currentRoute!.name),
+                    const SizedBox(
+                      height: Config.defaultPadding,
+                    ),
+                    ImageButton(
+                        onPressed: selectTourists,
+                        imageName: "group.png",
+                        text: selected.isEmpty
+                            ? "Select tourists"
+                            : "Selected ${selected.length} tourists"),
+                    const SizedBox(
+                      height: Config.defaultPadding,
+                    ),
+                    ImageButton(
+                        onPressed: selectDate,
+                        imageName: "schedule.png",
+                        text: "Start date ${dateTimeToStr(builder.startDate)}"),
+                    const SizedBox(
+                      height: Config.defaultPadding,
+                    )
+                  ],
+                )
+              ],
             ),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                  height: 200,
-                  width: 200,
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: ClipRRect(
-                        borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/trip.png")),
-                  )),
-              const SizedBox(
-                width: Config.defaultPadding * 3,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/trainer.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectInstructor,
-                              color: Config.secondaryColor,
-                              text: currInstructor == null
-                                  ? "Select instructor"
-                                  : "${currInstructor!.firstName} ${currInstructor!.secondName}")
-                        ],
-                      )),
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/route.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectRoute,
-                              color: Config.secondaryColor,
-                              text: currentRoute == null
-                                  ? "Select route"
-                                  : currentRoute!.name)
-                        ],
-                      )),
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/group.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectTourists,
-                              color: Config.secondaryColor,
-                              text: selected.isEmpty ? "Select tourists" :
-                          "Selected ${selected.length} tourists")
-                        ],
-                      )),
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  SizedBox(
-                      width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/time.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectDate,
-                              color: Config.secondaryColor,
-                              text: "Start date ${dateTimeToStr(builder.startDate)}")
-                        ],
-                      )),
-                  const SizedBox(
-                    height: Config.defaultPadding,)
+            const SizedBox(
+              height: Config.defaultPadding,
+            ),
+            Config.defaultText("Select skill category for the trip"),
+            const SizedBox(
+              height: Config.defaultPadding,
+            ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: ToggleSwitch(
+                minWidth: 140.0,
+                initialLabelIndex: builder.requiredSkillCategory.index,
+                cornerRadius: Config.defaultRadius,
+                activeFgColor: Colors.black,
+                inactiveBgColor: Config.secondaryColor,
+                inactiveFgColor: Colors.white,
+                totalSwitches: 3,
+                animate: true,
+                animationDuration: 200,
+                labels: const ['Beginner', 'Intermediate', 'Advanced'],
+                activeBgColors: const [
+                  [Colors.green],
+                  [Colors.deepOrangeAccent],
+                  [Colors.red]
                 ],
-              )
-            ],
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,),
-          Config.defaultText("Select skill category for the trip"),
-          const SizedBox(
-            height: Config.defaultPadding,),
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: ToggleSwitch(
-              minWidth: 140.0,
-              initialLabelIndex: builder.requiredSkillCategory.index,
-              cornerRadius: Config.defaultRadius,
-              activeFgColor: Colors.black,
-              inactiveBgColor: Config.secondaryColor,
-              inactiveFgColor: Colors.white,
-              totalSwitches: 3,
-              animate: true,
-              animationDuration: 200,
-              labels: const ['Beginner', 'Intermediate', 'Advanced'],
-              activeBgColors: const [
-                [Colors.green],
-                [Colors.deepOrangeAccent],
-                [Colors.red]
-              ],
-              customTextStyles: [
-                Config.defaultTextStyle(),
-                Config.defaultTextStyle(),
-                Config.defaultTextStyle(),
-              ],
-              onToggle: (index) {
-                if (index == null) return;
-                setState(() {
-                  builder.requiredSkillCategory = SkillCategory.values[index];
-                });
-              },
+                customTextStyles: [
+                  Config.defaultTextStyle(),
+                  Config.defaultTextStyle(),
+                  Config.defaultTextStyle(),
+                ],
+                onToggle: (index) {
+                  if (index == null) return;
+                  setState(() {
+                    builder.requiredSkillCategory = SkillCategory.values[index];
+                  });
+                },
+              ),
             ),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          SizedBox(
-            width: 450,
-            child: SliderTextSetter<int>(
-                minVal: 2,
-                maxVal: 60,
-                notifier: durationNotifier,
-                leading: "Duration in days"),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding * 2,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                  ),
-                  child: Container(
-                    padding: Config.paddingAll,
-                    child: Text("Cancel",
-                        style: Theme.of(context).textTheme.titleMedium),
-                  )),
-              ElevatedButton(
-                  onPressed: () {
-                    if (currInstructor == null) {
-                      ServiceIO()
-                          .showMessage("Instructor is not selected", context);
-                      return;
-                    }
-                    if (currentRoute == null) {
-                      ServiceIO()
-                          .showMessage("Route is not selected", context);
-                      return;
-                    }
-                    builder.tourists = selected.toList();
-                    if (builder.tourists.isEmpty) {
-                      ServiceIO()
-                          .showMessage("Select tourists for the trip", context);
-                      return;
-                    }
-                    builder.durationDays = durationNotifier.value;
-                    builder.instructor = currInstructor!;
-                    builder.route = currentRoute!;
-                    Navigator.of(context).pop();
-                    widget.onSubmit(builder.build());
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                  child: Container(
-                    padding: Config.paddingAll,
-                    child: Text(actionName,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
+            const SizedBox(
+              height: Config.defaultPadding,
+            ),
+            SizedBox(
+              width: 450,
+              child: SliderTextSetter<int>(
+                  minVal: 2,
+                  maxVal: 60,
+                  notifier: durationNotifier,
+                  leading: "Duration in days"),
+            )
+          ],
+        ));
+  }
+
+  void buildEntity() {
+    if (currInstructor == null) {
+      ServiceIO().showMessage("Instructor is not selected", context);
+      return;
+    }
+    if (currentRoute == null) {
+      ServiceIO().showMessage("Route is not selected", context);
+      return;
+    }
+    builder.tourists = selected.toList();
+    if (builder.tourists.isEmpty) {
+      ServiceIO().showMessage("Select tourists for the trip", context);
+      return;
+    }
+    builder.durationDays = durationNotifier.value;
+    builder.instructor = currInstructor!;
+    builder.route = currentRoute!;
+    Navigator.of(context).pop();
+    widget.onSubmit(builder.build());
   }
 
   void selectInstructor() {
@@ -383,31 +274,10 @@ class _TripFormState extends State<TripForm> {
   }
 
   void selectTourists() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(),
-              contentBuilder: (tourists) => TouristSelectList(
-                tourists: tourists,
-                onDispose: () {
-                  Future.delayed(const Duration(milliseconds: 10), () {
-                    setState(() {
-                    });
-                  });
-                },
-                filtersFlex: 2,
-                itemHoverColor: Colors.grey,
-                selected: selected,
-              ),
-            ),
-          ),
-        ));
+    Selector.selectTourists(context, selected: selected, onDispose: () {
+      Future.delayed(const Duration(milliseconds: 10), () {
+        setState(() {});
+      });
+    });
   }
 }

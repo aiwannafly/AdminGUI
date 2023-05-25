@@ -4,10 +4,15 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:tourist_admin_panel/components/input_label.dart';
+import 'package:tourist_admin_panel/components/route_type_view.dart';
 import 'package:tourist_admin_panel/crud/crud_config.dart';
+import 'package:tourist_admin_panel/crud/forms/base_form.dart';
 import 'package:tourist_admin_panel/crud/forms/place_select_list.dart';
+import 'package:tourist_admin_panel/crud/selector.dart';
 
 import '../../api/place_api.dart';
+import '../../components/image_box.dart';
+import '../../components/image_button.dart';
 import '../../components/simple_button.dart';
 import '../../components/slider_text_setter.dart';
 import '../../config/config.dart';
@@ -62,197 +67,101 @@ class _RouteFormState extends State<RouteForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: Config.borderRadius,
-        color: Config.bgColor,
-      ),
-      padding: Config.paddingAll,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              "$actionName route",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                  height: 200,
-                  width: 200,
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    height: 150,
-                    width: 150,
-                    child: ClipRRect(
-                        borderRadius: Config.borderRadius,
-                        child: Image.asset("assets/images/route.png")),
-                  )),
-              const SizedBox(
-                width: Config.defaultPadding,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: Config.defaultPadding,
-                  ),
-                  SizedBox(
-                    width: 300,
-                    child: InputLabel(
-                      controller: nameController,
-                      hintText: "Route name",
+    return BaseForm(
+        buildEntity: buildEntity,
+        entityName: "route",
+        body: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ImageBox(
+                  imageName: "route.png",
+                ),
+                const SizedBox(
+                  width: Config.defaultPadding,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: Config.defaultPadding,
                     ),
-                  ),
-                  const SizedBox(
-                    height: Config.defaultPadding * 2,
-                  ),
-                  SizedBox(
+                    SizedBox(
                       width: 300,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: Image.asset("assets/images/place.png"),
-                          ),
-                          const SizedBox(
-                            width: Config.defaultPadding,
-                          ),
-                          SimpleButton(
-                              onPressed: selectPlaces,
-                              color: Config.secondaryColor,
-                              text: selected.isEmpty ? "Select places" :
-                              "Selected ${selected.length} places")
-                        ],
-                      )),
-                ],
-              )
-            ],
-          ),
-          Config.defaultText("Select route type"),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: ToggleSwitch(
-              minWidth: 120,
-              initialLabelIndex: builder.routeType.index,
-              cornerRadius: Config.defaultRadius,
-              activeFgColor: Colors.black,
-              inactiveBgColor: Config.secondaryColor,
-              inactiveFgColor: Colors.white,
-              totalSwitches: RouteType.values.length,
-              animate: true,
-              animationDuration: 200,
-              labels: RouteType.values.map((e) => e.string).toList(),
-              activeBgColor: const [Colors.blue],
-              customTextStyles: List.filled(
-                  RouteType.values.length,
-                  TextStyle(
-                      fontFamily: "Montserrat",
-                      fontSize: 14,
-                      color: Colors.grey.shade200)),
-              onToggle: (index) {
-                if (index == null) return;
-                setState(() {
-                  builder.routeType = RouteType.values[index];
-                });
-              },
+                      child: InputLabel(
+                        controller: nameController,
+                        hintText: "Route name",
+                      ),
+                    ),
+                    const SizedBox(
+                      height: Config.defaultPadding * 2,
+                    ),
+                    ImageButton(
+                      onPressed: selectPlaces,
+                      text: "Select places",
+                      imageName: "place.png",
+                    ),
+                  ],
+                )
+              ],
             ),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          SizedBox(
-            width: 400,
-            child: SliderTextSetter<int>(
-                minVal: minLengthKm,
-                maxVal: maxLengthKm,
-                divisions: (maxLengthKm - minLengthKm),
-                notifier: lengthNotifier,
-                leading: "Select length in km."),
-          ),
-          const SizedBox(
-            height: Config.defaultPadding,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                  ),
-                  child: Container(
-                    padding: Config.paddingAll,
-                    child: Text("Cancel",
-                        style: Theme.of(context).textTheme.titleMedium),
-                  )),
-              ElevatedButton(
-                  onPressed: () {
-                    builder.name = nameController.text;
-                    if (builder.name.isEmpty) {
-                      ServiceIO()
-                          .showMessage("Name must not be empty", context);
-                      return;
-                    }
-                    builder.places = selected.toList();
-                    Navigator.of(context).pop();
-                    widget.onSubmit(builder.build());
-                  },
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.green),
-                  ),
-                  child: Container(
-                    padding: Config.paddingAll,
-                    child: Text(actionName,
-                        style: Theme.of(context).textTheme.titleMedium),
-                  )),
-            ],
-          )
-        ],
-      ),
-    );
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Config.defaultText("Route type :"),
+                const SizedBox(
+                  width: Config.defaultPadding,
+                ),
+                DropdownMenu(
+                    onSelected: (val) {
+                      if (val != null) {
+                        setState(() {
+                          builder.routeType = val;
+                        });
+                      }
+                    },
+                    menuStyle: MenuStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Config.secondaryColor),
+                      // side: MaterialStateProperty.all(const BorderSide(width: 0))
+                    ),
+                    initialSelection: builder.routeType,
+                    leadingIcon: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: Config.defaultPadding),
+                        child: RouteTypeView(
+                          routeType: builder.routeType,
+                          size: 30,
+                        )),
+                    dropdownMenuEntries: RouteType.values
+                        .map((e) => DropdownMenuEntry(
+                            value: e,
+                            label: e.string,
+                            leadingIcon: RouteTypeView(routeType: e)))
+                        .toList()),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  void buildEntity() {
+    builder.name = nameController.text;
+    if (builder.name.isEmpty) {
+      ServiceIO().showMessage("Name must not be empty", context);
+      return;
+    }
+    builder.places = selected.toList();
+    Navigator.of(context).pop();
+    widget.onSubmit(builder.build());
   }
 
   void selectPlaces() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: ItemsFutureBuilder<Place>(
-              itemsGetter: PlaceApi().getAll(),
-              contentBuilder: (items) => PlaceSelectList(
-                places: items,
-                onDispose: () {
-                  Future.delayed(const Duration(milliseconds: 10), () {
-                    setState(() {
-                    });
-                  });
-                },
-                filtersFlex: 0,
-                itemHoverColor: Colors.grey,
-                selected: selected,
-              ),
-            ),
-          ),
-        ));
+    Selector.selectPlaces(context, selected: selected, onDispose: () {
+      Future.delayed(const Duration(milliseconds: 10), () {
+        setState(() {});
+      });
+    });
   }
 }
