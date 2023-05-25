@@ -1,12 +1,9 @@
 import 'dart:collection';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:tourist_admin_panel/api/tourist_api.dart';
 import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/components/image_button.dart';
 import 'package:tourist_admin_panel/crud/forms/base_form.dart';
-import 'package:tourist_admin_panel/crud/forms/tourist_select_list.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 import 'package:tourist_admin_panel/utils.dart';
 
@@ -14,7 +11,6 @@ import '../../config/config.dart';
 import '../../model/activity.dart';
 import '../../model/schedule.dart';
 import '../../services/service_io.dart';
-import '../base_crud_future_builder.dart';
 import '../selector.dart';
 
 class ActivityForm extends StatefulWidget {
@@ -113,31 +109,11 @@ class _ActivityFormState extends State<ActivityForm> {
   }
 
   void selectAttended() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(),
-              contentBuilder: (tourists) => TouristSelectList(
-                tourists: tourists,
-                onDispose: () {
-                  Future.delayed(const Duration(milliseconds: 10), () {
-                    setState(() {});
-                  });
-                },
-                filtersFlex: 2,
-                itemHoverColor: Colors.grey,
-                selected: attended,
-              ),
-            ),
-          ),
-        ));
+    Selector.selectTourists(context, selected: attended, onDispose: () {
+      Future.delayed(const Duration(milliseconds: 10), () {
+        setState(() {});
+      });
+    });
   }
 
   void selectDate() async {

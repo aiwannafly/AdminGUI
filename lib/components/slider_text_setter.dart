@@ -7,14 +7,14 @@ class SliderTextSetter<T extends num> extends StatelessWidget {
   const SliderTextSetter({super.key, required this.minVal,
     required this.maxVal,
     required this.notifier,
-    required this.leading,
+    required this.leadingText,
     this.divisions,
     this.showText = true});
 
   final T minVal;
   final T maxVal;
   final ValueNotifier<T> notifier;
-  final String leading;
+  final String leadingText;
   final bool showText;
   final int? divisions;
 
@@ -36,7 +36,7 @@ class SliderTextSetter<T extends num> extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Config.defaultText(leading),
+            child: Config.defaultText(leadingText),
           ),
           Expanded(
             flex: 6,

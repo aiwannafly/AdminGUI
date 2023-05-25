@@ -19,6 +19,8 @@ class BaseForm extends StatelessWidget {
   final String entityName;
   final FormType formType;
 
+  static const double defaultLabelWidth = 300;
+
   String get actionName => formType == FormType.create ? "Create" : "Update";
 
   @override

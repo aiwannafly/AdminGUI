@@ -68,6 +68,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "schedule",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Column(
           children: [
             Row(
@@ -100,7 +101,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
                       height: Config.defaultPadding,
                     ),
                     SizedBox(
-                        width: 300,
+                        width: BaseForm.defaultLabelWidth,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -150,7 +151,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
                       (maxActivityDurationMins - minActivityDurationMins) ~/
                           durationPortion,
                   notifier: durationNotifier,
-                  leading: "Select activity duration"),
+                  leadingText: "Select activity duration"),
             )
           ],
         ));

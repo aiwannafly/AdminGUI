@@ -6,6 +6,7 @@ import 'package:tourist_admin_panel/crud/crud_config.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
 import '../../config/config.dart';
+import '../../responsive.dart';
 
 class TrainerFilters extends StatelessWidget {
   const TrainerFilters({super.key, required this.onChange});
@@ -19,6 +20,40 @@ class TrainerFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Responsive.isDesktop(context)) {
+      return Row(
+        children: [
+          Expanded(
+              child: buildSelector(context,
+                  prefix: "Gender",
+                  items: Gender.values,
+                  selectedItems: selectedGenders,
+                  itemBuilder: (i) => GenderView(gender: i))),
+          Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  Config.defaultText("Age"),
+                  IntRangeSlider(
+                      min: 16, max: 40, rangeNotifier: ageRangeNotifier)
+                ],
+              )),
+          Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  Config.defaultText("Salary"),
+                  IntRangeSlider(
+                      min: minTrainerSalary,
+                      max: maxTrainerSalary,
+                      divisions: (maxTrainerSalary - minTrainerSalary) ~/
+                          salaryPortion,
+                      rangeNotifier: salaryRangeNotifier)
+                ],
+              )),
+        ],
+      );
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Config.defaultText("Filters"),
       const SizedBox(
@@ -55,7 +90,8 @@ class TrainerFilters extends StatelessWidget {
               child: IntRangeSlider(
                   min: minTrainerSalary,
                   max: maxTrainerSalary,
-                  divisions: (maxTrainerSalary - minTrainerSalary) ~/ salaryPortion,
+                  divisions:
+                      (maxTrainerSalary - minTrainerSalary) ~/ salaryPortion,
                   rangeNotifier: salaryRangeNotifier)),
           const Spacer(
             flex: 1,

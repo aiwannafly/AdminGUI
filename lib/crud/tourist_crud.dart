@@ -4,14 +4,19 @@ import 'package:tourist_admin_panel/components/skill.dart';
 import 'package:tourist_admin_panel/crud/filters/tourist_filters.dart';
 import 'package:tourist_admin_panel/crud/forms/tourist_form.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
+import 'package:tourist_admin_panel/responsive.dart';
 
 import '../api/tourist_api.dart';
 import '../model/tourist.dart';
 import '../services/service_io.dart';
 
 class TouristCRUD extends StatefulWidget {
-  const TouristCRUD({super.key, required this.tourists,
-  this.onTap, required this.filtersFlex, this.itemHoverColor});
+  const TouristCRUD(
+      {super.key,
+      required this.tourists,
+      this.onTap,
+      required this.filtersFlex,
+      this.itemHoverColor});
 
   final void Function(Tourist)? onTap;
   final Color? itemHoverColor;
@@ -49,11 +54,13 @@ class _TouristCRUDState extends State<TouristCRUD> {
               flex: 1),
           ColumnData<Tourist>(
               name: "Name",
-              buildColumnElem: (e) => centeredText('${e.firstName} ${e.secondName}'),
+              buildColumnElem: (e) =>
+                  centeredText('${e.firstName} ${e.secondName}'),
               flex: 3),
           ColumnData<Tourist>(
               name: "Group",
-              buildColumnElem: (e) => centeredText(e.group != null ? e.group!.name : "-"),
+              buildColumnElem: (e) =>
+                  centeredText(e.group != null ? e.group!.name : "-"),
               flex: 2),
           ColumnData<Tourist>(
               name: "Skill category",
@@ -77,7 +84,10 @@ class _TouristCRUDState extends State<TouristCRUD> {
   }
 
   Widget formBuilder({required Function(Tourist) onSubmit, Tourist? initial}) {
-    return TouristForm(onSubmit: onSubmit, initial: initial,);
+    return TouristForm(
+      onSubmit: onSubmit,
+      initial: initial,
+    );
   }
 
   Widget centeredText(String text) {
@@ -94,7 +104,9 @@ class _TouristCRUDState extends State<TouristCRUD> {
     return Flexible(
       flex: widget.filtersFlex,
       child: Container(
-          margin: const EdgeInsets.only(top: 30),
+          margin: Responsive.isDesktop(context)
+              ? const EdgeInsets.only(top: 30)
+              : const EdgeInsets.all(0),
           child: TouristFilters(
             onChange: getFiltered,
           )),
@@ -102,8 +114,7 @@ class _TouristCRUDState extends State<TouristCRUD> {
   }
 
   void getFiltered() async {
-    List<Tourist>? filtered =
-        await TouristApi().findByGenderAndSkill();
+    List<Tourist>? filtered = await TouristApi().findByGenderAndSkill();
     if (filtered == null) {
       await Future.microtask(() {
         ServiceIO()

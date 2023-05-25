@@ -63,6 +63,6 @@ class _PlaceCRUDState extends State<PlaceCRUD> {
 
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
-    return Expanded(flex: widget.filtersFlex, child: Container());
+    return Flexible(flex: widget.filtersFlex, child: Container());
   }
 }

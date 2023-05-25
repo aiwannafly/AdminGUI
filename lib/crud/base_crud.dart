@@ -107,13 +107,15 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
-            flex: 4,
+            flex: 5,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Responsive(desktop: const SizedBox(), mobile: widget.filters),
+                const SizedBox(height: Config.defaultPadding,),
                 Padding(
                   padding:
                       const EdgeInsets.only(right: Config.defaultPadding * 2),
@@ -125,25 +127,24 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Visibility(
-                        visible: widget.modifiable,
-                        child: ElevatedButton.icon(
-                          style: TextButton.styleFrom(
-                            padding: Config.paddingAll,
-                          ),
-                          onPressed: create,
-                          icon: const Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                          label: Padding(
-                            padding: Config.paddingAll / 2,
-                            child: Text(
-                              "Add New",
-                              style: Theme.of(context).textTheme.titleMedium,
+                          visible: widget.modifiable,
+                          child: ElevatedButton.icon(
+                            style: TextButton.styleFrom(
+                              padding: Config.paddingAll,
                             ),
-                          ),
-                        )
-                      ),
+                            onPressed: create,
+                            icon: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
+                            label: Padding(
+                              padding: Config.paddingAll / 2,
+                              child: Text(
+                                "Add New",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                          )),
                     ],
                   ),
                 ),
@@ -155,37 +156,49 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
                       const EdgeInsets.only(right: Config.defaultPadding * 2),
                   child: columnTitles(),
                 ),
-                SizedBox(
-                  height: widget.itemHoverColor == null
-                      ? Config.pageHeight(context) * .7
-                      : max(300, Config.pageHeight(context) * .35),
-                  child: ListView.separated(
-                    padding:
-                        const EdgeInsets.only(right: Config.defaultPadding * 2),
-                    itemBuilder: (BuildContext context, int index) =>
-                        index >= widget.items.length
-                            ? const SizedBox()
-                            : columnRow(widget.items[index]),
-                    separatorBuilder: (BuildContext context, int index) =>
-                        Divider(
-                      color: Colors.grey.shade600,
-                      thickness: BaseCrud.dividerWidth,
-                      height: 1,
-                    ),
-                    itemCount: widget.items.length + 1,
-                  ),
-                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: widget.items.map((e) => columnRow(e)).toList(),
+                )
+                // SizedBox(
+                //   child: ListView.separated(
+                //     padding:
+                //         const EdgeInsets.only(right: Config.defaultPadding * 2),
+                //     itemBuilder: (BuildContext context, int index) =>
+                //         index >= widget.items.length
+                //             ? const SizedBox()
+                //             : columnRow(widget.items[index]),
+                //     separatorBuilder: (BuildContext context, int index) =>
+                //         Divider(
+                //       color: Colors.grey.shade600,
+                //       thickness: BaseCrud.dividerWidth,
+                //       height: 1,
+                //     ),
+                //     itemCount: widget.items.length + 1,
+                //   ),
+                // ),
               ],
             ),
           ),
+          Responsive(
+              mobile: const SizedBox(),
+              desktop: Container(
+                width: 2,
+                height: Config.pageHeight(context) * .8,
+                color: Config.secondaryColor,
+              )),
+          const Responsive(
+              mobile: SizedBox(),
+              desktop: SizedBox(
+                width: Config.defaultPadding * 2,
+              )),
           Responsive(mobile: const SizedBox(), desktop: widget.filters),
         ],
       ),
     );
   }
 
-  Widget columnTitleWrapper(BuildContext context,
-      {required Widget child}) {
+  Widget columnTitleWrapper(BuildContext context, {required Widget child}) {
     return Container(
       color: Config.secondaryColor, // Colors.indigo.withOpacity(.3),
       child: Row(
@@ -315,7 +328,8 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
 
   void update(T value) async {
     await Future.delayed(const Duration(milliseconds: 10), () {
-      ServiceIO().showWidget(context, showDoneButton: false,
+      ServiceIO().showWidget(context,
+          showDoneButton: false,
           child: widget.formBuilder(
             onSubmit: (updatedTourist) async {
               bool? updated = await widget.crudApi.update(updatedTourist);

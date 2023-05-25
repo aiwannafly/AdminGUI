@@ -1,13 +1,13 @@
 import 'dart:convert';
 
+import 'api_fields.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/group_api.dart';
 import 'package:tourist_admin_panel/crud/filters/tourist_filters.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
-
-import 'api_fields.dart';
 
 class TouristApi extends CRUDApi<Tourist> {
   TouristApi._internal();
@@ -29,7 +29,7 @@ class TouristApi extends CRUDApi<Tourist> {
 
   Future<List<Tourist>?> findByGroup({required int groupId}) async {
     var response =
-        await http.get(Uri.parse('${apiUrl}search/tourists/group/$groupId'));
+        await http.get(Uri.parse('${apiUri}search/tourists/group/$groupId'));
     if (response.statusCode != 200) {
       return null;
     }
@@ -59,7 +59,7 @@ class TouristApi extends CRUDApi<Tourist> {
         .substring(1);
     var response = await http.get(
         Uri.parse(
-            '${apiUrl}search/tourists?genders=$gendersStr&skillCategories=$skillsStr&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'));
+            '${apiUri}search/tourists?genders=$gendersStr&skillCategories=$skillsStr&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'));
     if (response.statusCode != 200) {
       return null;
     }

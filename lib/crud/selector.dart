@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:tourist_admin_panel/crud/place_crud.dart';
+import 'package:tourist_admin_panel/crud/route_crud.dart';
 import 'package:tourist_admin_panel/crud/schedule_crud.dart';
 import 'package:tourist_admin_panel/crud/section_crud.dart';
 import 'package:tourist_admin_panel/crud/section_manager_crud.dart';
@@ -12,10 +14,12 @@ import 'package:tourist_admin_panel/model/group.dart';
 import 'package:tourist_admin_panel/model/group.dart';
 import 'package:tourist_admin_panel/model/group.dart';
 import 'package:tourist_admin_panel/model/place.dart';
+import 'package:tourist_admin_panel/model/route.dart';
 import 'package:tourist_admin_panel/model/section_manager.dart';
 
 import '../api/group_api.dart';
 import '../api/place_api.dart';
+import '../api/route_api.dart';
 import '../api/schedule_api.dart';
 import '../api/section_api.dart';
 import '../api/section_manager_api.dart';
@@ -42,9 +46,10 @@ class Selector {
   static final bgColor = Config.bgColor.withOpacity(.99);
 
   static void selectSchedule(BuildContext context,
-      {required void Function(Schedule) onSelected}) {
+      {required void Function(Schedule) onSelected,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
             width: width(context),
             height: height(context),
@@ -63,9 +68,10 @@ class Selector {
   }
 
   static void selectTourists(BuildContext context,
-      {required Set<Tourist> selected, VoidCallback? onDispose}) {
+      {required Set<Tourist> selected, VoidCallback? onDispose,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
           width: width(context),
           height: height(context),
@@ -88,9 +94,10 @@ class Selector {
   }
 
   static void selectPlaces(BuildContext context,
-      {required Set<Place> selected, VoidCallback? onDispose}) {
+      {required Set<Place> selected, VoidCallback? onDispose,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
           width: width(context),
           color: bgColor,
@@ -112,9 +119,10 @@ class Selector {
   }
 
   static void selectSection(BuildContext context,
-      {required void Function(Section) onSelected}) {
+      {required void Function(Section) onSelected,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
             width: width(context),
             height: height(context),
@@ -133,9 +141,10 @@ class Selector {
   }
 
   static void selectTrainer(BuildContext context,
-      {required void Function(Trainer) onSelected}) {
+      {required void Function(Trainer) onSelected,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
             width: width(context),
             height: height(context),
@@ -154,9 +163,10 @@ class Selector {
   }
 
   static void selectTrainerBySection(BuildContext context,
-      {required void Function(Trainer) onSelected, required Section section}) {
+      {required void Function(Trainer) onSelected, required Section section,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
             width: width(context),
             height: height(context),
@@ -175,9 +185,10 @@ class Selector {
   }
 
   static void selectManager(BuildContext context,
-      {required void Function(SectionManager) onSelected}) {
+      {required void Function(SectionManager) onSelected,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
           width: width(context),
           height: height(context),
@@ -198,9 +209,10 @@ class Selector {
   }
 
   static void selectGroup(BuildContext context,
-      {required void Function(Group) onSelected}) {
+      {required void Function(Group) onSelected,
+        Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
         child: Container(
             width: width(context),
             height: height(context),
@@ -218,10 +230,78 @@ class Selector {
             )));
   }
 
-  static void selectTourist(BuildContext context,
-      {required void Function(Tourist) onSelected}) {
+  static void selectPlace(BuildContext context,
+      {required void Function(Place) onSelected,
+      Color barrierColor = Colors.transparent}) {
     ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
+        barrierColor: barrierColor,
+        child: Container(
+            width: width(context),
+            height: height(context),
+            color: bgColor,
+            padding: Config.paddingAll,
+            alignment: Alignment.center,
+            child: ItemsFutureBuilder<Place>(
+              itemsGetter: PlaceApi().getAll(),
+              contentBuilder: (items) => PlaceCRUD(
+                items: items,
+                onTap: onSelected,
+                filtersFlex: 0,
+                itemHoverColor: Colors.grey,
+              ),
+            )));
+  }
+
+  static void selectRoute(BuildContext context,
+      {required void Function(RouteTrip) onSelected,
+        Color barrierColor = Colors.transparent}) {
+    ServiceIO().showWidget(context,
+        barrierColor: barrierColor,
+        child: Container(
+            width: width(context),
+            height: height(context),
+            color: bgColor,
+            padding: Config.paddingAll,
+            alignment: Alignment.center,
+            child: ItemsFutureBuilder<RouteTrip>(
+              itemsGetter: RouteApi().getAll(),
+              contentBuilder: (items) => RouteCRUD(
+                items: items,
+                onTap: onSelected,
+                filtersFlex: 0,
+                itemHoverColor: Colors.grey,
+              ),
+            )));
+  }
+
+  static void selectTourist(BuildContext context,
+      {required void Function(Tourist) onSelected,
+        Color barrierColor = Colors.transparent}) {
+    ServiceIO().showWidget(context,
+        barrierColor: barrierColor,
+        child: Container(
+            width: width(context),
+            height: height(context),
+            color: bgColor,
+            padding: Config.paddingAll,
+            alignment: Alignment.center,
+            child: ItemsFutureBuilder<Tourist>(
+              itemsGetter: TouristApi().findByGenderAndSkill(),
+              contentBuilder: (tourists) => TouristCRUD(
+                tourists: tourists,
+                onTap: onSelected,
+                filtersFlex: 0,
+                itemHoverColor: Colors.grey,
+              ),
+            )));
+  }
+
+  static void selectInstructor(BuildContext context,
+      {required void Function(Tourist) onSelected,
+        Color barrierColor = Colors.transparent}) {
+    // TODO: use instructor api call
+    ServiceIO().showWidget(context,
+        barrierColor: barrierColor,
         child: Container(
             width: width(context),
             height: height(context),

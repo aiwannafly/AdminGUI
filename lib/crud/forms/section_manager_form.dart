@@ -62,6 +62,7 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "section manager",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Column(
           children: [
             Row(
@@ -78,7 +79,7 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
                       height: Config.defaultPadding * 3,
                     ),
                     SizedBox(
-                        width: 300,
+                        width: BaseForm.defaultLabelWidth,
                         child: InputLabel(
                             controller: firstNameController,
                             hintText: "First name")),
@@ -86,7 +87,7 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
                       height: Config.defaultPadding,
                     ),
                     SizedBox(
-                        width: 300,
+                        width: BaseForm.defaultLabelWidth,
                         child: InputLabel(
                             controller: secondNameController,
                             hintText: "Second name")),
@@ -107,7 +108,7 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
                     (maxSectionManagerSalary - minSectionManagerSalary) ~/
                         salaryPortion,
                 notifier: salaryNotifier,
-                leading: "Select salary"),
+                leadingText: "Select salary"),
             const SizedBox(
               height: Config.defaultPadding,
             ),

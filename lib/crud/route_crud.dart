@@ -77,10 +77,15 @@ class _RouteCRUDState extends State<RouteCRUD> {
 
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
-    return Expanded(
+    return Flexible(
         flex: widget.filtersFlex,
         child: RouteFilters(
-          shownRoutes: items,
+          onUpdate: (items) {
+            setState(() {
+              widget.items.clear();
+              widget.items.addAll(items);
+            });
+          },
         ));
   }
 }

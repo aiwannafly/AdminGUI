@@ -70,6 +70,7 @@ class _RouteFormState extends State<RouteForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "route",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Column(
           children: [
             Row(
@@ -88,7 +89,7 @@ class _RouteFormState extends State<RouteForm> {
                       height: Config.defaultPadding,
                     ),
                     SizedBox(
-                      width: 300,
+                      width: BaseForm.defaultLabelWidth,
                       child: InputLabel(
                         controller: nameController,
                         hintText: "Route name",
@@ -99,7 +100,9 @@ class _RouteFormState extends State<RouteForm> {
                     ),
                     ImageButton(
                       onPressed: selectPlaces,
-                      text: "Select places",
+                      text: selected.isEmpty
+                          ? "Select places"
+                          : "Selected ${selected.length} places",
                       imageName: "place.png",
                     ),
                   ],

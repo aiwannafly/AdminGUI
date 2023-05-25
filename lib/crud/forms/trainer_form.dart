@@ -74,6 +74,7 @@ class _TrainerFormState extends State<TrainerForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "trainer",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Column(
           children: [
             Row(
@@ -111,7 +112,7 @@ class _TrainerFormState extends State<TrainerForm> {
                 divisions:
                     (maxTrainerSalary - minTrainerSalary) ~/ salaryPortion,
                 notifier: salaryNotifier,
-                leading: "Select salary")
+                leadingText: "Select salary")
           ],
         ));
   }

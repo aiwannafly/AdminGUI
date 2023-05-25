@@ -55,6 +55,7 @@ class _GroupFormState extends State<GroupForm> {
     return BaseForm(
       buildEntity: buildEntity,
       entityName: "group",
+      formType: widget.initial == null ? FormType.create : FormType.update,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -69,7 +70,7 @@ class _GroupFormState extends State<GroupForm> {
                 height: Config.defaultPadding,
               ),
               SizedBox(
-                width: 300,
+                width: BaseForm.defaultLabelWidth,
                 child: InputLabel(
                   controller: nameController,
                   hintText: "Group name",

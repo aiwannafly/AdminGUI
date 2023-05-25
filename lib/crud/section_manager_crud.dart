@@ -90,7 +90,7 @@ class _SectionManagerCRUDState extends State<SectionManagerCRUD> {
 
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
-    return Expanded(
+    return Flexible(
       flex: widget.filtersFlex,
       child: Container(
           margin: const EdgeInsets.only(top: 30),

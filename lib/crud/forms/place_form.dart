@@ -4,7 +4,6 @@ import 'package:map_picker_free/map_picker_free.dart';
 import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/components/image_button.dart';
 import 'package:tourist_admin_panel/components/input_label.dart';
-import 'package:tourist_admin_panel/components/simple_button.dart';
 import 'package:tourist_admin_panel/crud/forms/base_form.dart';
 import 'package:tourist_admin_panel/model/place.dart';
 
@@ -47,6 +46,7 @@ class _PlaceFormState extends State<PlaceForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "place",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,7 +61,7 @@ class _PlaceFormState extends State<PlaceForm> {
                   height: Config.defaultPadding,
                 ),
                 SizedBox(
-                  width: 300,
+                  width: BaseForm.defaultLabelWidth,
                   child: InputLabel(
                     controller: nameController,
                     hintText: "Place name",

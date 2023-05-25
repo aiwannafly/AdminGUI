@@ -6,6 +6,7 @@ import 'package:tourist_admin_panel/components/gender.dart';
 import 'package:tourist_admin_panel/components/range_slider.dart';
 import 'package:tourist_admin_panel/components/selector_label.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/responsive.dart';
 
 import '../../components/skill.dart';
 import '../../config/config.dart';
@@ -22,6 +23,34 @@ class TouristFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!Responsive.isDesktop(context)) {
+      return Row(
+        children: [
+          Expanded(
+            child: buildSelector(context,
+                prefix: "Gender",
+                items: Gender.values,
+                selectedItems: selectedGenders,
+                itemBuilder: (i) => GenderView(gender: i)),
+          ),
+          Expanded(
+            flex: 2,
+            child: buildSelector(context,
+                prefix: "Skill category",
+                items: SkillCategory.values,
+                selectedItems: selectedSkillCategories,
+                itemBuilder: (i) => SkillView(skillCategory: i)),
+          ),
+          Expanded(
+            flex: 2,
+            child: Column(children: [
+              Config.defaultText("Age"),
+              IntRangeSlider(min: 16, max: 40, rangeNotifier: ageRangeNotifier)
+            ]),
+          )
+        ],
+      );
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Config.defaultText("Filters"),
       const SizedBox(

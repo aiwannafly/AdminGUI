@@ -33,7 +33,7 @@ class SectionManagerApi extends CRUDApi<SectionManager> {
     int minBirthYear = DateTime.now().year - maxAge;
     int maxBirthYear = DateTime.now().year - minAge;
     var response = await http.get(Uri.parse(
-        '${apiUrl}search/sectionManagers?minEmploymentYear=$minEmploymentYear'
+        '${apiUri}search/sectionManagers?minEmploymentYear=$minEmploymentYear'
         '&maxEmploymentYear=$maxEmploymentYear'
         '&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'
         '&minSalary=$minSalary&maxSalary=$maxSalary'));

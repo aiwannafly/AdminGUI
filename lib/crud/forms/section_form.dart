@@ -50,6 +50,7 @@ class _SectionFormState extends State<SectionForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "section",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -73,7 +74,7 @@ class _SectionFormState extends State<SectionForm> {
                   height: Config.defaultPadding * 2,
                 ),
                 SizedBox(
-                    width: 300,
+                    width: BaseForm.defaultLabelWidth,
                     child: InputLabel(
                         controller: nameController, hintText: "Section name")),
                 const SizedBox(

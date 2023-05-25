@@ -19,7 +19,7 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
 
   @override
   Future<int?> create(T value) async {
-    var response = await http.post(Uri.parse('$apiUrl$singleApiName'),
+    var response = await http.post(Uri.parse('$apiUri$singleApiName'),
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
         },
@@ -32,7 +32,11 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
 
   @override
   Future<List<T>?> getAll() async {
-    var response = await http.get(Uri.parse("$apiUrl$multiApiName"));
+    return getAllByUrl(multiApiName);
+  }
+
+  Future<List<T>?> getAllByUrl(String url) async {
+    var response = await http.get(Uri.parse("$apiUri$url"));
     if (response.statusCode != 200) {
       return null;
     }
@@ -48,7 +52,7 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
   @override
   Future<bool> update(T value) async {
     var response =
-        await http.post(Uri.parse('$apiUrl$singleApiName/${value.getId()}'),
+        await http.post(Uri.parse('$apiUri$singleApiName/${value.getId()}'),
             headers: {
               "Content-Type": "application/json; charset=UTF-8",
             },
@@ -59,7 +63,7 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
   @override
   Future<bool> delete(T value) async {
     var response =
-        await http.delete(Uri.parse('$apiUrl$singleApiName/${value.getId()}'));
+        await http.delete(Uri.parse('$apiUri$singleApiName/${value.getId()}'));
     return response.statusCode == 200;
   }
 }

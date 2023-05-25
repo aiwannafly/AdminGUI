@@ -59,6 +59,7 @@ class _TouristFormState extends State<TouristForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: 'tourist',
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Column(
           children: [
             Row(
@@ -105,7 +106,7 @@ class _TouristFormState extends State<TouristForm> {
                       height: Config.defaultPadding,
                     ),
                     SizedBox(
-                        width: 300,
+                        width: BaseForm.defaultLabelWidth,
                         child: InputLabel(
                             controller: firstNameController,
                             hintText: "First name")),
@@ -113,7 +114,7 @@ class _TouristFormState extends State<TouristForm> {
                       height: Config.defaultPadding,
                     ),
                     SizedBox(
-                        width: 300,
+                        width: BaseForm.defaultLabelWidth,
                         child: InputLabel(
                             controller: secondNameController,
                             hintText: "Second name")),

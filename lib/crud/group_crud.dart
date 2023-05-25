@@ -74,6 +74,6 @@ class _GroupCRUDState extends State<GroupCRUD> {
 
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
-    return Expanded(flex: widget.filtersFlex, child: Container());
+    return Flexible(flex: widget.filtersFlex, child: Container());
   }
 }

@@ -59,6 +59,7 @@ class _CompetitionFormState extends State<CompetitionForm> {
     return BaseForm(
       buildEntity: buildEntity,
       entityName: "competition",
+      formType: widget.initial == null ? FormType.create : FormType.update,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -73,7 +74,7 @@ class _CompetitionFormState extends State<CompetitionForm> {
                 height: Config.defaultPadding,
               ),
               SizedBox(
-                width: 300,
+                width: BaseForm.defaultLabelWidth,
                 child: InputLabel(
                   controller: nameController,
                   hintText: "Competition name",

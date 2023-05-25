@@ -77,6 +77,7 @@ class _TripFormState extends State<TripForm> {
     return BaseForm(
         buildEntity: buildEntity,
         entityName: "trip",
+        formType: widget.initial == null ? FormType.create : FormType.update,
         body: Column(
           children: [
             Row(
@@ -177,7 +178,7 @@ class _TripFormState extends State<TripForm> {
                   minVal: 2,
                   maxVal: 60,
                   notifier: durationNotifier,
-                  leading: "Duration in days"),
+                  leadingText: "Duration in days"),
             )
           ],
         ));
@@ -205,59 +206,19 @@ class _TripFormState extends State<TripForm> {
   }
 
   void selectInstructor() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: ItemsFutureBuilder<Tourist>(
-              itemsGetter: TouristApi().findByGenderAndSkill(),
-              contentBuilder: (tourists) => SizedBox(
-                child: TouristCRUD(
-                  tourists: tourists,
-                  onTap: (s) {
-                    currInstructor = s;
-                    Navigator.of(context).pop();
-                    setState(() {});
-                  },
-                  filtersFlex: 1,
-                  itemHoverColor: Colors.grey,
-                ),
-              ),
-            ),
-          ),
-        ));
+    Selector.selectTourist(context, onSelected: (s) {
+      currInstructor = s;
+      Navigator.of(context).pop();
+      setState(() {});
+    });
   }
 
   void selectRoute() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-          width: max(1200, Config.pageWidth(context) * .5),
-          height: max(400, Config.pageHeight(context) * .5),
-          color: Config.bgColor.withOpacity(.99),
-          padding: Config.paddingAll,
-          alignment: Alignment.center,
-          child: SingleChildScrollView(
-            child: ItemsFutureBuilder<RouteTrip>(
-              itemsGetter: RouteApi().getAll(),
-              contentBuilder: (items) => RouteCRUD(
-                items: items,
-                onTap: (s) {
-                  currentRoute = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                filtersFlex: 0,
-                itemHoverColor: Colors.grey,
-              ),
-            ),
-          ),
-        ));
+    Selector.selectRoute(context, onSelected: (s) {
+      currentRoute = s;
+      Navigator.of(context).pop();
+      setState(() {});
+    });
   }
 
   void selectDate() async {

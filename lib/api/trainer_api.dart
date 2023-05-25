@@ -50,7 +50,7 @@ class TrainerApi extends CRUDApi<Trainer> {
     String gendersStr =
         genders.fold("", (prev, curr) => "$prev,${curr.string}").substring(1);
     var response = await http.get(Uri.parse(
-        '${apiUrl}search/trainers?genders=$gendersStr'
+        '${apiUri}search/trainers?genders=$gendersStr'
             '&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'
             '&minSalary=$minSalary&maxSalary=$maxSalary'));
     if (response.statusCode != 200) {
@@ -82,7 +82,7 @@ class TrainerApi extends CRUDApi<Trainer> {
 
   Future<List<Trainer>?> findBySectionId(int id) async {
     var response =
-        await http.get(Uri.parse("${apiUrl}search/trainers/section/$id"));
+        await http.get(Uri.parse("${apiUri}search/trainers/section/$id"));
     if (response.statusCode != 200) {
       return null;
     }

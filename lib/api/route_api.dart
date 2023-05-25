@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/place_api.dart';
 import 'package:tourist_admin_panel/model/place.dart';
+import 'package:tourist_admin_panel/model/section.dart';
+import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/utils.dart';
 
+import 'api_fields.dart';
+import 'package:http/http.dart' as http;
 import '../model/route.dart';
 
 class RouteApi extends CRUDApi<RouteTrip> {
@@ -33,6 +41,30 @@ class RouteApi extends CRUDApi<RouteTrip> {
         lengthKm: json["lengthKm"],
         routeType: RouteTypeExtension.fromString(json["routeType"]),
         places: places);
+  }
+
+  Future<List<RouteTrip>?> findRoutesBySection(Section s) async {
+    return _crudApi.getAllByUrl("search/routes/section/${s.id}");
+  }
+
+  Future<List<RouteTrip>?> findRoutesByDate(DateTime date) async {
+    return _crudApi.getAllByUrl("search/routes/date/${dateTimeToStr(date)}");
+  }
+
+  Future<List<RouteTrip>?> findRoutesByInstructor(Tourist t) async {
+    return _crudApi.getAllByUrl("search/routes/instructor/${t.id}");
+  }
+
+  Future<List<RouteTrip>?> findRoutesByTripsCount(int tripsCount) async {
+    return _crudApi.getAllByUrl("search/routes/trips?count=$tripsCount");
+  }
+
+  Future<List<RouteTrip>?> findRoutesByPlace(Place t) async {
+    return _crudApi.getAllByUrl("search/routes/place/${t.id}");
+  }
+
+  Future<List<RouteTrip>?> findRoutesByMinLengthKm(int lengthKm) async {
+    return _crudApi.getAllByUrl("search/routes/length?min=$lengthKm");
   }
 
   @override
