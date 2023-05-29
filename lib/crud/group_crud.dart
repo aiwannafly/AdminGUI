@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/crud/base_crud.dart';
 
 import '../api/group_api.dart';
+import '../config/config.dart';
 import '../model/group.dart';
 import 'forms/group_form.dart';
 
@@ -60,15 +61,6 @@ class _GroupCRUDState extends State<GroupCRUD> {
     return GroupForm(
       onSubmit: onSubmit,
       initial: initial,
-    );
-  }
-
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
     );
   }
 

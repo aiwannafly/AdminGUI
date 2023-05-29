@@ -30,13 +30,13 @@ class PlaceApi extends CRUDApi<Place> {
   }
 
   @override
-  Future<int?> create(Place value) {
-    return _crudApi.create(value);
+  Future<int?> create(Place value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Place value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Place value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -45,7 +45,7 @@ class PlaceApi extends CRUDApi<Place> {
   }
 
   @override
-  Future<bool> update(Place value) {
-    return _crudApi.update(value);
+  Future<bool> update(Place value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

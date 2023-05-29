@@ -28,13 +28,13 @@ class SectionApi extends CRUDApi<Section> {
   }
 
   @override
-  Future<int?> create(Section value) {
-    return _crudApi.create(value);
+  Future<int?> create(Section value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Section value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Section value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -43,7 +43,7 @@ class SectionApi extends CRUDApi<Section> {
   }
 
   @override
-  Future<bool> update(Section value) {
-    return _crudApi.update(value);
+  Future<bool> update(Section value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

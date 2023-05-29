@@ -39,9 +39,11 @@ extension on RouteFilterState {
 }
 
 class RouteFilters extends StatefulWidget {
-  const RouteFilters({super.key, required this.onUpdate});
+  const RouteFilters(
+      {super.key, required this.onUpdate, required this.titleNotifier});
 
   final void Function(List<RouteTrip> routes) onUpdate;
+  final ValueNotifier<String> titleNotifier;
 
   @override
   State<RouteFilters> createState() => _RouteFiltersState();
@@ -66,11 +68,17 @@ class _RouteFiltersState extends State<RouteFilters> {
   }
 
   void onMinLengthUpdate() async {
-    handleResult(await RouteApi().findRoutesByMinLengthKm(lengthNotifier.value));
+    handleResult(
+        await RouteApi().findRoutesByMinLengthKm(lengthNotifier.value));
+    widget.titleNotifier.value =
+        "Routes with length not less than ${lengthNotifier.value} km.";
   }
 
   void onTripsCountUpdate() async {
-    handleResult(await RouteApi().findRoutesByTripsCount(tripsCountNotifier.value));
+    handleResult(
+        await RouteApi().findRoutesByTripsCount(tripsCountNotifier.value));
+    widget.titleNotifier.value =
+        "Routes, which were passed ${tripsCountNotifier.value} times";
   }
 
   @override
@@ -101,11 +109,15 @@ class _RouteFiltersState extends State<RouteFilters> {
           height: Config.defaultPadding,
         ),
         DropdownMenu(
-            onSelected: (val) {
+            onSelected: (val) async {
               if (val != null) {
                 setState(() {
                   state = val;
                 });
+                if (state == RouteFilterState.showAll) {
+                  handleResult(await RouteApi().getAll());
+                  widget.titleNotifier.value = "All routes";
+                }
               }
             },
             menuStyle: MenuStyle(
@@ -122,22 +134,12 @@ class _RouteFiltersState extends State<RouteFilters> {
         ),
         Visibility(
           visible: state == RouteFilterState.byMinLengthKm,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: SliderTextSetter<int>(
-                    minVal: minLengthKm,
-                    maxVal: maxLengthKm,
-                    divisions: (maxLengthKm - minLengthKm),
-                    notifier: lengthNotifier,
-                    leadingText: "Select min. length in km."),
-              ),
-              const Spacer(
-                flex: 1,
-              )
-            ],
-          ),
+          child: SliderTextSetter<int>(
+              minVal: minLengthKm,
+              maxVal: maxLengthKm,
+              divisions: (maxLengthKm - minLengthKm),
+              notifier: lengthNotifier,
+              leadingText: "Min. length km."),
         ),
         Visibility(
             visible: state == RouteFilterState.byPlace,
@@ -149,22 +151,16 @@ class _RouteFiltersState extends State<RouteFilters> {
             )),
         Visibility(
             visible: state == RouteFilterState.byTripsCount,
-            child: Row(
-              children: [
-                Expanded(
-                    child: SliderTextSetter(
-                        minVal: 0,
-                        maxVal: 100,
-                        notifier: tripsCountNotifier,
-                        leadingText: "Select trips count")),
-                const Spacer()
-              ],
-            )),
+            child: SliderTextSetter(
+                minVal: 0,
+                maxVal: 100,
+                notifier: tripsCountNotifier,
+                leadingText: "Select trips count")),
         Visibility(
             visible: state == RouteFilterState.byInstructor,
             child: ImageButton(
               onPressed: selectInstructor,
-              imageName: "trainer.png",
+              imageName: "instructor.png",
               text: selectedInstructor == null
                   ? "Select instructor"
                   : "${selectedInstructor!.firstName} ${selectedInstructor!.secondName}",
@@ -197,6 +193,7 @@ class _RouteFiltersState extends State<RouteFilters> {
         selectedPlace = r;
       });
       handleResult(await RouteApi().findRoutesByPlace(selectedPlace!));
+      widget.titleNotifier.value = "Routes with ${selectedPlace!.name}";
     });
   }
 
@@ -207,7 +204,10 @@ class _RouteFiltersState extends State<RouteFilters> {
       setState(() {
         selectedInstructor = r;
       });
-      handleResult(await RouteApi().findRoutesByInstructor(selectedInstructor!));
+      handleResult(
+          await RouteApi().findRoutesByInstructor(selectedInstructor!));
+      widget.titleNotifier.value =
+          "Routes with ${selectedInstructor!.firstName} ${selectedInstructor!.secondName} as instructor";
     });
   }
 
@@ -219,6 +219,8 @@ class _RouteFiltersState extends State<RouteFilters> {
         selectedSection = r;
       });
       handleResult(await RouteApi().findRoutesBySection(selectedSection!));
+      widget.titleNotifier.value =
+          "Routes, which were passed by tourists from ${selectedSection!.name} section";
     });
   }
 
@@ -233,6 +235,8 @@ class _RouteFiltersState extends State<RouteFilters> {
         selectedDate = newTime;
       });
       handleResult(await RouteApi().findRoutesByDate(selectedDate));
+      widget.titleNotifier.value =
+          "Routes, which were being passed at ${dateTimeToStr(selectedDate)}";
     }
   }
 }

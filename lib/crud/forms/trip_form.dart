@@ -6,10 +6,11 @@ import 'package:toggle_switch/toggle_switch.dart';
 import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
 import 'package:tourist_admin_panel/crud/forms/base_form.dart';
-import 'package:tourist_admin_panel/crud/forms/tourist_select_list.dart';
+import 'package:tourist_admin_panel/crud/select_lists/tourist_select_list.dart';
 import 'package:tourist_admin_panel/crud/selector.dart';
 import 'package:tourist_admin_panel/model/route.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/screens/home/components/side_menu.dart';
 
 import '../../api/route_api.dart';
 import '../../api/tourist_api.dart';
@@ -20,6 +21,7 @@ import '../../model/trip.dart';
 import '../../services/service_io.dart';
 import '../../utils.dart';
 import '../base_crud_future_builder.dart';
+import '../crud_builder.dart';
 import '../filters/tourist_filters.dart';
 import '../route_crud.dart';
 import '../tourist_crud.dart';
@@ -95,7 +97,8 @@ class _TripFormState extends State<TripForm> {
                     ),
                     ImageButton(
                         onPressed: selectInstructor,
-                        imageName: "trainer.png",
+                        imagePath: "",
+                        imageName: CRUD.instructors.imagePath,
                         text: currInstructor == null
                             ? "Select instructor"
                             : "${currInstructor!.firstName} ${currInstructor!.secondName}"),
@@ -104,7 +107,8 @@ class _TripFormState extends State<TripForm> {
                     ),
                     ImageButton(
                         onPressed: selectRoute,
-                        imageName: "route.png",
+                        imagePath: "",
+                        imageName: CRUD.routes.imagePath,
                         text: currentRoute == null
                             ? "Select route"
                             : currentRoute!.name),
@@ -113,7 +117,8 @@ class _TripFormState extends State<TripForm> {
                     ),
                     ImageButton(
                         onPressed: selectTourists,
-                        imageName: "group.png",
+                        imagePath: "",
+                        imageName: CRUD.groups.imagePath,
                         text: selected.isEmpty
                             ? "Select tourists"
                             : "Selected ${selected.length} tourists"),
@@ -201,12 +206,11 @@ class _TripFormState extends State<TripForm> {
     builder.durationDays = durationNotifier.value;
     builder.instructor = currInstructor!;
     builder.route = currentRoute!;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 
   void selectInstructor() {
-    Selector.selectTourist(context, onSelected: (s) {
+    Selector.selectInstructor(context, onSelected: (s) {
       currInstructor = s;
       Navigator.of(context).pop();
       setState(() {});

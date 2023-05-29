@@ -31,13 +31,13 @@ class ScheduleApi extends CRUDApi<Schedule> {
   }
 
   @override
-  Future<int?> create(Schedule value) {
-    return _crudApi.create(value);
+  Future<int?> create(Schedule value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Schedule value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Schedule value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -46,7 +46,7 @@ class ScheduleApi extends CRUDApi<Schedule> {
   }
 
   @override
-  Future<bool> update(Schedule value) {
-    return _crudApi.update(value);
+  Future<bool> update(Schedule value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

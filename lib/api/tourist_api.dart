@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:tourist_admin_panel/model/route.dart';
+
 import 'api_fields.dart';
 
 import 'package:http/http.dart' as http;
@@ -27,19 +29,29 @@ class TouristApi extends CRUDApi<Tourist> {
     return _crudApi.getAll();
   }
 
+  Future<List<Tourist>?> findTrainerAndSportsmanCandidates() async {
+    return _crudApi.getAllByUrl("search/trainers/candidates");
+  }
+
   Future<List<Tourist>?> findByGroup({required int groupId}) async {
-    var response =
-        await http.get(Uri.parse('${apiUri}search/tourists/group/$groupId'));
-    if (response.statusCode != 200) {
-      return null;
-    }
-    var decodedBody = utf8.decode(response.body.codeUnits);
-    var collectionJson = jsonDecode(decodedBody);
-    List<Tourist> tourists = [];
-    for (dynamic entity in collectionJson) {
-      tourists.add(fromJSON(entity));
-    }
-    return tourists;
+    return _crudApi.getAllByUrl('search/tourists/group/$groupId');
+  }
+
+  Future<List<Tourist>?> findByRoutes(
+      {required int groupId, required List<RouteTrip> routes}) async {
+    String ids = routes
+        .sublist(1)
+        .fold(routes[0].id.toString(), (prev, curr) => "$prev,${curr.id}");
+    return _crudApi.getAllByUrl('search/tourists/group/$groupId/routes?routeIds=$ids');
+  }
+
+  Future<List<Tourist>?> findWhoHadTripWithTrainer(
+      {required int groupId}) async {
+    return _crudApi.getAllByUrl('search/tourists/trainer-trip/group/$groupId');
+  }
+
+  Future<List<Tourist>?> findByPlace({required int placeId}) async {
+    return _crudApi.getAllByUrl('search/tourists/place/$placeId');
   }
 
   Future<List<Tourist>?> findByGenderAndSkill() async {
@@ -57,24 +69,13 @@ class TouristApi extends CRUDApi<Tourist> {
     String skillsStr = skillCategories
         .fold("", (prev, curr) => "$prev,${curr.string}")
         .substring(1);
-    var response = await http.get(
-        Uri.parse(
-            '${apiUri}search/tourists?genders=$gendersStr&skillCategories=$skillsStr&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'));
-    if (response.statusCode != 200) {
-      return null;
-    }
-    var decodedBody = utf8.decode(response.body.codeUnits);
-    var collectionJson = jsonDecode(decodedBody);
-    List<Tourist> tourists = [];
-    for (dynamic entity in collectionJson) {
-      tourists.add(fromJSON(entity));
-    }
-    return tourists;
+    return _crudApi.getAllByUrl(
+        'search/tourists?genders=$gendersStr&skillCategories=$skillsStr&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear');
   }
 
   @override
-  Future<int?> create(Tourist value) async {
-    return _crudApi.create(value);
+  Future<int?> create(Tourist value, [List<String>? errors]) async {
+    return _crudApi.create(value, errors);
   }
 
   static Map<String, dynamic> toMap(Tourist tourist) {
@@ -90,13 +91,13 @@ class TouristApi extends CRUDApi<Tourist> {
   }
 
   @override
-  Future<bool> update(Tourist value) async {
-    return _crudApi.update(value);
+  Future<bool> update(Tourist value, [List<String>? errors]) async {
+    return _crudApi.update(value, errors);
   }
 
   @override
-  Future<bool> delete(Tourist value) async {
-    return _crudApi.delete(value);
+  Future<bool> delete(Tourist value, [List<String>? errors]) async {
+    return _crudApi.delete(value, errors);
   }
 
   static Tourist fromJSON(dynamic data) {

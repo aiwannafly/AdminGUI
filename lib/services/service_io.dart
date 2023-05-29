@@ -28,26 +28,29 @@ class ServiceIO {
             elevation: 0,
             backgroundColor: Config.bgColor,
             alignment: Alignment.center,
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Stack(children: [
-                  child,
-                  Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Visibility(
-                        visible: showDoneButton,
-                        child: SimpleButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          color: Config.primaryColor,
-                          text: "Done",
-                        ),
-                      ))
-                ])
-              ],
+            insetPadding: const EdgeInsets.symmetric(horizontal: Config.defaultPadding),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Stack(children: [
+                    child,
+                    Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Visibility(
+                          visible: showDoneButton,
+                          child: SimpleButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            color: Config.primaryColor,
+                            text: "Done",
+                          ),
+                        ))
+                  ])
+                ],
+              ),
             )));
   }
 

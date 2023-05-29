@@ -3,6 +3,7 @@ import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/crud/forms/section_form.dart';
 
 import '../api/section_api.dart';
+import '../config/config.dart';
 import '../model/section.dart';
 
 class SectionCRUD extends StatefulWidget {
@@ -56,15 +57,6 @@ class _SectionCRUDState extends State<SectionCRUD> {
     return SectionForm(
       onSubmit: onSubmit,
       initial: initial,
-    );
-  }
-
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
     );
   }
 

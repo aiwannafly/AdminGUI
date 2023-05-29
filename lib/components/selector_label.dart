@@ -49,7 +49,8 @@ class _SelectorLabelState<T> extends State<SelectorLabel<T>> {
           widget.onChange();
         });
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
             borderRadius: Config.borderRadius,
             color: widget.selectedItems.contains(item)

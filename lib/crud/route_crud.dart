@@ -4,6 +4,7 @@ import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/crud/filters/route_filters.dart';
 
 import '../api/route_api.dart';
+import '../config/config.dart';
 import '../model/route.dart';
 import 'forms/route_form.dart';
 
@@ -26,11 +27,13 @@ class RouteCRUD extends StatefulWidget {
 
 class _RouteCRUDState extends State<RouteCRUD> {
   List<RouteTrip> get items => widget.items;
+  final titleNotifier = ValueNotifier("Routes");
 
   @override
   Widget build(BuildContext context) {
     return BaseCrud<RouteTrip>(
-        title: "Routes",
+        title: titleNotifier.value,
+        titleNotifier: titleNotifier,
         items: items,
         columns: [
           ColumnData<RouteTrip>(
@@ -66,20 +69,12 @@ class _RouteCRUDState extends State<RouteCRUD> {
     );
   }
 
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
-  }
-
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
     return Flexible(
         flex: widget.filtersFlex,
         child: RouteFilters(
+          titleNotifier: titleNotifier,
           onUpdate: (items) {
             setState(() {
               widget.items.clear();

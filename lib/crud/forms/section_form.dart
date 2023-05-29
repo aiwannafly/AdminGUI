@@ -97,7 +97,6 @@ class _SectionFormState extends State<SectionForm> {
       return;
     }
     builder.sectionManager = currentManager!;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 

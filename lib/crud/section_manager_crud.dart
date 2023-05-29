@@ -4,6 +4,7 @@ import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/crud/filters/section_manager_filters.dart';
 import 'package:tourist_admin_panel/crud/forms/section_manager_form.dart';
 
+import '../config/config.dart';
 import '../model/section_manager.dart';
 import '../services/service_io.dart';
 
@@ -77,15 +78,6 @@ class _SectionManagerCRUDState extends State<SectionManagerCRUD> {
 
   Widget formBuilder({required Function(SectionManager) onSubmit, SectionManager? initial}) {
     return SectionManagerForm(onSubmit: onSubmit, initial: initial,);
-  }
-
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
   }
 
   Widget buildFilters() {

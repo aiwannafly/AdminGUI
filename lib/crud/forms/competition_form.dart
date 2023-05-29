@@ -6,7 +6,7 @@ import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/components/image_button.dart';
 import 'package:tourist_admin_panel/components/simple_button.dart';
 import 'package:tourist_admin_panel/crud/forms/base_form.dart';
-import 'package:tourist_admin_panel/crud/forms/tourist_select_list.dart';
+import 'package:tourist_admin_panel/crud/select_lists/tourist_select_list.dart';
 import 'package:tourist_admin_panel/crud/selector.dart';
 import 'package:tourist_admin_panel/model/competition.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
@@ -109,7 +109,7 @@ class _CompetitionFormState extends State<CompetitionForm> {
   void buildEntity() {
     builder.tourists = selected.toList();
     if (builder.tourists.isEmpty) {
-      ServiceIO().showMessage("Select tourists for the trip", context);
+      ServiceIO().showMessage("Select participants", context);
       return;
     }
     builder.name = nameController.text;
@@ -117,7 +117,6 @@ class _CompetitionFormState extends State<CompetitionForm> {
       ServiceIO().showMessage("Name must not be empty", context);
       return;
     }
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 
@@ -135,7 +134,7 @@ class _CompetitionFormState extends State<CompetitionForm> {
   }
 
   void selectTourists() {
-    Selector.selectTourists(context, selected: selected, onDispose: () {
+    Selector.selectTouristsFromTrainersAndSportsmen(context, selected: selected, onDispose: () {
       Future.delayed(const Duration(milliseconds: 10), () {
         setState(() {});
       });

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tourist_admin_panel/api/crud_api.dart';
@@ -18,12 +19,16 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
       required this.fromJSON});
 
   @override
-  Future<int?> create(T value) async {
+  Future<int?> create(T value, [List<String>? errors]) async {
+    print(jsonEncode(toMap(value)));
     var response = await http.post(Uri.parse('$apiUri$singleApiName'),
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
         },
         body: jsonEncode(toMap(value)));
+    if (response.statusCode == HttpStatus.badRequest && errors != null) {
+      errors.add(response.body);
+    }
     if (response.statusCode != 200) {
       return null;
     }
@@ -50,18 +55,22 @@ class BaseCRUDApi<T extends BaseEntity> extends CRUDApi<T> {
   }
 
   @override
-  Future<bool> update(T value) async {
+  Future<bool> update(T value, [List<String>? errors]) async {
+    print(jsonEncode(toMap(value)));
     var response =
         await http.post(Uri.parse('$apiUri$singleApiName/${value.getId()}'),
             headers: {
               "Content-Type": "application/json; charset=UTF-8",
             },
             body: jsonEncode(toMap(value)));
+    if (response.statusCode == HttpStatus.badRequest && errors != null) {
+      errors.add(response.body);
+    }
     return response.statusCode == 200;
   }
 
   @override
-  Future<bool> delete(T value) async {
+  Future<bool> delete(T value, [List<String>? errors]) async {
     var response =
         await http.delete(Uri.parse('$apiUri$singleApiName/${value.getId()}'));
     return response.statusCode == 200;

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/crud/crud_config.dart';
@@ -8,14 +6,11 @@ import 'package:tourist_admin_panel/crud/selector.dart';
 import 'package:tourist_admin_panel/model/group.dart';
 import 'package:tourist_admin_panel/utils.dart';
 
-import '../../api/group_api.dart';
 import '../../components/image_button.dart';
 import '../../components/slider_text_setter.dart';
 import '../../config/config.dart';
 import '../../model/schedule.dart';
 import '../../services/service_io.dart';
-import '../base_crud_future_builder.dart';
-import '../group_crud.dart';
 
 class ScheduleForm extends StatefulWidget {
   const ScheduleForm({super.key, required this.onSubmit, this.initial});
@@ -143,7 +138,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
               height: Config.defaultPadding,
             ),
             SizedBox(
-              width: 400,
+              width: 500,
               child: SliderTextSetter<int>(
                   minVal: minActivityDurationMins,
                   maxVal: maxActivityDurationMins,
@@ -151,7 +146,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
                       (maxActivityDurationMins - minActivityDurationMins) ~/
                           durationPortion,
                   notifier: durationNotifier,
-                  leadingText: "Select activity duration"),
+                  leadingText: "Duration"),
             )
           ],
         ));
@@ -163,7 +158,6 @@ class _ScheduleFormState extends State<ScheduleForm> {
       return;
     }
     builder.group = currentGroup!;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 

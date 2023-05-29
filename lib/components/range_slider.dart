@@ -29,6 +29,8 @@ class _IntRangeSliderState extends State<IntRangeSlider> {
           max: widget.max.toDouble(),
           min: widget.min.toDouble(),
           divisions: widget.divisions?? widget.max - widget.min,
+          inactiveColor: Config.secondaryColor,
+          activeColor: Config.primaryColor,
           labels: RangeLabels(
             widget.rangeNotifier.value.start.round().toString(),
             widget.rangeNotifier.value.end.round().toString(),

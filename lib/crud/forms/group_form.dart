@@ -122,7 +122,6 @@ class _GroupFormState extends State<GroupForm> {
       return;
     }
     builder.trainer = currentTrainer!;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 

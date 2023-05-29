@@ -24,12 +24,13 @@ class Header extends StatelessWidget {
             ),
           if (!Responsive.isMobile(context))
             Text(
-              "Tourist Admin Panel",
+              Config.appName,
               style: Theme.of(context).textTheme.titleLarge,
             ),
           if (!Responsive.isMobile(context))
             Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
-          const Expanded(child: SearchField()),
+          // const Expanded(child: SearchField()),
+          const Spacer(),
           const ProfileCard()
         ],
       ),
@@ -64,7 +65,7 @@ class ProfileCard extends StatelessWidget {
             const Padding(
               padding:
               EdgeInsets.symmetric(horizontal: Config.defaultPadding / 2),
-              child: Text("Aleksandr Ivanov"),
+              child: Text("Admin"),
             ),
           const Icon(Icons.keyboard_arrow_down),
         ],

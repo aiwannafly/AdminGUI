@@ -4,6 +4,7 @@ import 'package:tourist_admin_panel/model/activity.dart';
 import 'package:tourist_admin_panel/utils.dart';
 
 import '../api/activity_api.dart';
+import '../config/config.dart';
 import 'forms/activity_form.dart';
 
 class ActivityCRUD extends StatefulWidget {
@@ -67,14 +68,6 @@ class _ActivityCRUDState extends State<ActivityCRUD> {
     return ActivityForm(onSubmit: onSubmit, initial: initial);
   }
 
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      )
-    );
-  }
 
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();

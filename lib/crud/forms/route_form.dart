@@ -7,7 +7,7 @@ import 'package:tourist_admin_panel/components/input_label.dart';
 import 'package:tourist_admin_panel/components/route_type_view.dart';
 import 'package:tourist_admin_panel/crud/crud_config.dart';
 import 'package:tourist_admin_panel/crud/forms/base_form.dart';
-import 'package:tourist_admin_panel/crud/forms/place_select_list.dart';
+import 'package:tourist_admin_panel/crud/select_lists/place_select_list.dart';
 import 'package:tourist_admin_panel/crud/selector.dart';
 
 import '../../api/place_api.dart';
@@ -145,6 +145,14 @@ class _RouteFormState extends State<RouteForm> {
                         .toList()),
               ],
             ),
+            const SizedBox(
+              height: Config.defaultPadding,
+            ),
+            SliderTextSetter(
+                minVal: minLengthKm,
+                maxVal: maxLengthKm,
+                notifier: lengthNotifier,
+                leadingText: "Route length")
           ],
         ));
   }
@@ -156,7 +164,6 @@ class _RouteFormState extends State<RouteForm> {
       return;
     }
     builder.places = selected.toList();
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 

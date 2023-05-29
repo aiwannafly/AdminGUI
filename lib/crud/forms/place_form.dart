@@ -95,7 +95,6 @@ class _PlaceFormState extends State<PlaceForm> {
     builder.address = currAddress!;
     builder.longitude = currLatLong!.longitude;
     builder.latitude = currLatLong!.latitude;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 

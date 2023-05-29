@@ -166,7 +166,6 @@ class _SectionManagerFormState extends State<SectionManagerForm> {
       ServiceIO().showMessage("Second name must not be empty", context);
       return;
     }
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 }

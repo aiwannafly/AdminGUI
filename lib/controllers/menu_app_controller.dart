@@ -20,4 +20,8 @@ class MenuAppController extends ChangeNotifier {
   void changeCRUD(CRUD crud) {
     _dashboardKey.currentState!.setContent(crud);
   }
+
+  CRUD currentCRUD() {
+    return _dashboardKey.currentState!.current;
+  }
 }

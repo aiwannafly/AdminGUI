@@ -55,18 +55,18 @@ class SectionManagerApi extends CRUDApi<SectionManager> {
   }
 
   @override
-  Future<int?> create(SectionManager s) async {
-    return _crudApi.create(s);
+  Future<int?> create(SectionManager s, [List<String>? errors]) async {
+    return _crudApi.create(s, errors);
   }
 
   @override
-  Future<bool> update(SectionManager s) async {
-    return _crudApi.update(s);
+  Future<bool> update(SectionManager s, [List<String>? errors]) async {
+    return _crudApi.update(s, errors);
   }
 
   @override
-  Future<bool> delete(SectionManager s) async {
-    return _crudApi.delete(s);
+  Future<bool> delete(SectionManager s, [List<String>? errors]) async {
+    return _crudApi.delete(s, errors);
   }
 
   static String toJSON(SectionManager s) {

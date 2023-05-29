@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:tourist_admin_panel/api/instructor_api.dart';
+import 'package:tourist_admin_panel/crud/sportsman_crud.dart';
 import 'package:tourist_admin_panel/model/competition.dart';
+import 'package:tourist_admin_panel/model/sportsman.dart';
 
 import '../../api/activity_api.dart';
 import '../../api/group_api.dart';
@@ -32,7 +35,9 @@ import 'package:tourist_admin_panel/model/tourist.dart';
 import 'package:tourist_admin_panel/model/trainer.dart';
 
 import '../api/competition_api.dart';
+import '../api/sportsman_api.dart';
 import 'competition_crud.dart';
+import 'instructor_crud.dart';
 
 enum CRUD {
   tourists,
@@ -44,7 +49,9 @@ enum CRUD {
   activities,
   routes,
   trips,
-  competitions
+  instructors,
+  competitions,
+  sportsmen
 }
 
 extension CRUDBuilder on CRUD {
@@ -59,7 +66,9 @@ extension CRUDBuilder on CRUD {
       CRUD.activities => Activity,
       CRUD.routes => Route,
       CRUD.trips => Trip,
-      CRUD.competitions => Competition
+      CRUD.competitions => Competition,
+      CRUD.instructors => Tourist,
+      CRUD.sportsmen => Sportsman
     };
   }
 
@@ -134,7 +143,21 @@ extension CRUDBuilder on CRUD {
             items: items,
             filtersFlex: 3,
           ),
-        )
+        ),
+      CRUD.instructors => ItemsFutureBuilder<Tourist>(
+          itemsGetter: InstructorApi().getAll(),
+          contentBuilder: (tourists) => InstructorCRUD(
+            tourists: tourists,
+            filtersFlex: 2,
+          ),
+        ),
+      CRUD.sportsmen => ItemsFutureBuilder<Sportsman>(
+          itemsGetter: SportsmanApi().getAll(),
+          contentBuilder: (sportsmen) => SportsmanCRUD(
+            sportsmen: sportsmen,
+            filtersFlex: 2,
+          ),
+        ),
     };
   }
 }

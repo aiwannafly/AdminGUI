@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
+import 'package:tourist_admin_panel/components/hover_wrapper.dart';
+import 'package:tourist_admin_panel/components/simple_button.dart';
 import 'package:tourist_admin_panel/conditionable.dart';
 import 'package:tourist_admin_panel/model/base_entity.dart';
 
@@ -28,17 +30,17 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
       required this.items,
       required this.columns,
       this.onTap,
+      this.titleNotifier,
       required this.filters,
       required this.tailFlex,
       required this.crudApi,
       required this.formBuilder,
       this.modifiable = true,
-      this.itemHoverColor,
-      this.buildUnderneath});
+      this.itemHoverColor});
 
+  final ValueNotifier<String>? titleNotifier;
   final void Function(T)? onTap;
   final String title;
-  final Widget Function(T)? buildUnderneath;
   final Widget Function({required Function(T) onSubmit, T? initial})
       formBuilder;
   final CRUDApi<T> crudApi;
@@ -56,10 +58,17 @@ class BaseCrud<T extends BaseEntity> extends StatefulWidget {
 class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
   Color get dividerColor => Colors.grey.shade200;
   late final List<ColumnData<T>> columns = widget.columns;
+  late ValueNotifier<String> titleNotifier;
+  int? activeElemId;
 
   @override
   void initState() {
     super.initState();
+    if (widget.titleNotifier != null) {
+      titleNotifier = widget.titleNotifier!;
+    } else {
+      titleNotifier = ValueNotifier(widget.title);
+    }
     if (!widget.modifiable) {
       return;
     }
@@ -115,36 +124,29 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Responsive(desktop: const SizedBox(), mobile: widget.filters),
-                const SizedBox(height: Config.defaultPadding,),
+                const SizedBox(
+                  height: Config.defaultPadding,
+                ),
                 Padding(
-                  padding:
-                      const EdgeInsets.only(right: Config.defaultPadding * 2),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Config.defaultPadding),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.title,
-                        style: Theme.of(context).textTheme.titleMedium,
+                      ValueListenableBuilder(
+                        valueListenable: titleNotifier,
+                        builder: (context, title, child) => Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
                       ),
                       Visibility(
                           visible: widget.modifiable,
-                          child: ElevatedButton.icon(
-                            style: TextButton.styleFrom(
-                              padding: Config.paddingAll,
-                            ),
+                          child: SimpleButton(
                             onPressed: create,
-                            icon: const Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                            label: Padding(
-                              padding: Config.paddingAll / 2,
-                              child: Text(
-                                "Add New",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                          )),
+                            color: Config.secondaryColor,
+                            text: "Add new",
+                          ))
                     ],
                   ),
                 ),
@@ -152,31 +154,23 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
                   height: Config.defaultPadding,
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.only(right: Config.defaultPadding * 2),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Config.defaultPadding),
                   child: columnTitles(),
                 ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: widget.items.map((e) => columnRow(e)).toList(),
-                )
-                // SizedBox(
-                //   child: ListView.separated(
-                //     padding:
-                //         const EdgeInsets.only(right: Config.defaultPadding * 2),
-                //     itemBuilder: (BuildContext context, int index) =>
-                //         index >= widget.items.length
-                //             ? const SizedBox()
-                //             : columnRow(widget.items[index]),
-                //     separatorBuilder: (BuildContext context, int index) =>
-                //         Divider(
-                //       color: Colors.grey.shade600,
-                //       thickness: BaseCrud.dividerWidth,
-                //       height: 1,
-                //     ),
-                //     itemCount: widget.items.length + 1,
-                //   ),
-                // ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Config.defaultPadding),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: widget.items.map((e) => columnRow(e)).toList(),
+                  ),
+                ),
+                Visibility(
+                    visible: widget.items.isEmpty,
+                    child: Container(
+                        padding: Config.paddingAll,
+                        child: Config.defaultText("No entities were found")))
               ],
             ),
           ),
@@ -200,7 +194,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
 
   Widget columnTitleWrapper(BuildContext context, {required Widget child}) {
     return Container(
-      color: Config.secondaryColor, // Colors.indigo.withOpacity(.3),
+      color: Config.secondaryColorDarken, // Colors.indigo.withOpacity(.3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -235,7 +229,7 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
           height: BaseCrud.tileHeight,
           width: BaseCrud.dividerWidth / 2,
         ),
-        child,
+        Expanded(child: Center(child: child)),
         Container(
           color: dividerColor,
           height: BaseCrud.tileHeight,
@@ -259,14 +253,22 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
   }
 
   Widget columnRow(T item) {
-    return InkWell(
-      onTap: () => widget.onTap != null ? widget.onTap!(item) : update(item),
-      hoverColor: widget.itemHoverColor,
-      child: SizedBox(
-        height: BaseCrud.tileHeight,
-        child: columnItems(item),
-      ),
-    );
+    bool shine = false;
+    if (activeElemId != null) {
+      if (widget.items.indexOf(item) == activeElemId) {
+        shine = true;
+        activeElemId = null;
+      }
+    }
+    return HoverWrapper(
+        key: shine ? Key(Random().nextInt(100000).toString()) : null,
+        shadowColor: Config.secondaryColor,
+        shineWhenAppear: shine,
+        onTap: () => widget.onTap != null ? widget.onTap!(item) : update(item),
+        child: SizedBox(
+          height: BaseCrud.tileHeight,
+          child: columnItems(item),
+        ));
   }
 
   Widget columnItems(T item) {
@@ -311,17 +313,32 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
     await Future.delayed(const Duration(milliseconds: 10), () {
       ServiceIO().showWidget(context, showDoneButton: false,
           child: widget.formBuilder(onSubmit: (value) async {
-        int? id = await widget.crudApi.create(value);
-        if (id == null) {
-          await Future.microtask(() {
-            ServiceIO().showMessage("Could not create the entity :/", context);
-          });
-        } else {
-          setState(() {
-            value.setId(id);
-            widget.items.add(value);
-          });
-        }
+        List<String> errors = [];
+        int? id;
+        Future.microtask(() => ServiceIO().showProgressCircle(context))
+            .then((_) async {
+          id = await widget.crudApi.create(value, errors);
+        }).then((_) {
+          Navigator.of(context).pop();
+          if (id == null) {
+            Future.microtask(() {
+              if (errors.isEmpty) {
+                ServiceIO()
+                    .showMessage("Could not create the entity :/", context);
+              } else {
+                ServiceIO().showMessage(errors.first, context);
+              }
+            });
+          } else {
+            Future.microtask(() {
+              Navigator.of(context).pop();
+            }).then((_) => setState(() {
+              value.setId(id!);
+              widget.items.add(value);
+              activeElemId = widget.items.length - 1;
+            }));
+          }
+        });
       }));
     });
   }
@@ -331,20 +348,34 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
       ServiceIO().showWidget(context,
           showDoneButton: false,
           child: widget.formBuilder(
-            onSubmit: (updatedTourist) async {
-              bool? updated = await widget.crudApi.update(updatedTourist);
-              if (!updated) {
-                await Future.microtask(() {
-                  ServiceIO()
-                      .showMessage("Could not update the entity :/", context);
-                });
-              } else {
-                setState(() {
-                  int idx = widget.items.indexOf(value);
-                  widget.items.removeAt(idx);
-                  widget.items.insert(idx, updatedTourist);
-                });
-              }
+            onSubmit: (newVal) async {
+              List<String> errors = [];
+              bool updated = false;
+              Future.microtask(() => ServiceIO().showProgressCircle(context))
+                  .then((_) async {
+                updated = await widget.crudApi.update(newVal, errors);
+              }).then((_) {
+                Navigator.of(context).pop();
+                if (!updated) {
+                  Future.microtask(() {
+                    if (errors.isEmpty) {
+                      ServiceIO().showMessage(
+                          "Could not update the entity :/", context);
+                    } else {
+                      ServiceIO().showMessage(errors.first, context);
+                    }
+                  });
+                } else {
+                  Future.microtask(() {
+                    Navigator.of(context).pop();
+                  }).then((_) => setState(() {
+                    int idx = widget.items.indexOf(value);
+                    widget.items.removeAt(idx);
+                    widget.items.insert(idx, newVal);
+                    activeElemId = idx;
+                  }));
+                }
+              });
             },
             initial: value,
           ));
@@ -353,17 +384,26 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
 
   void delete(T value) async {
     ServiceIO().showProgressCircle(context);
-    bool deleted = await widget.crudApi.delete(value);
+    List<String> errors = [];
+    bool deleted = await widget.crudApi.delete(value, errors);
     await Future.microtask(() {
       Navigator.of(context).pop();
     });
     if (!deleted) {
+      String postfix = "";
+      if (errors.isNotEmpty) {
+        postfix = " : ${errors.first}";
+      }
       await Future.microtask(() {
         ServiceIO().showMessage(
-            "Could not delete entity with ID ${value.getId()}", context);
+            "Could not delete entity with ID ${value.getId()}$postfix",
+            context);
       });
       return;
     }
+    await Future.microtask(() {
+      Navigator.of(context).pop();
+    });
     setState(() {
       widget.items.remove(value);
     });

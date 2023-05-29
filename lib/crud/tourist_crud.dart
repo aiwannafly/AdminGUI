@@ -7,6 +7,7 @@ import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/responsive.dart';
 
 import '../api/tourist_api.dart';
+import '../config/config.dart';
 import '../model/tourist.dart';
 import '../services/service_io.dart';
 
@@ -28,6 +29,8 @@ class TouristCRUD extends StatefulWidget {
 }
 
 class _TouristCRUDState extends State<TouristCRUD> {
+  final titleNotifier = ValueNotifier("All tourists");
+
   List<Tourist> get tourists => widget.tourists;
 
   @override
@@ -45,7 +48,8 @@ class _TouristCRUDState extends State<TouristCRUD> {
   @override
   Widget build(BuildContext context) {
     return BaseCrud<Tourist>(
-        title: "Registered tourists",
+        title: titleNotifier.value,
+        titleNotifier: titleNotifier,
         items: tourists,
         columns: [
           ColumnData<Tourist>(
@@ -90,15 +94,6 @@ class _TouristCRUDState extends State<TouristCRUD> {
     );
   }
 
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
-  }
-
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
     return Flexible(
@@ -109,6 +104,13 @@ class _TouristCRUDState extends State<TouristCRUD> {
               : const EdgeInsets.all(0),
           child: TouristFilters(
             onChange: getFiltered,
+            titleNotifier: titleNotifier,
+            onFound: (newTourists) {
+              setState(() {
+                widget.tourists.clear();
+                widget.tourists.addAll(newTourists);
+              });
+            },
           )),
     );
   }
@@ -123,6 +125,7 @@ class _TouristCRUDState extends State<TouristCRUD> {
       return;
     }
     setState(() {
+      titleNotifier.value = "By gender, skill and age";
       tourists.clear();
       tourists.addAll(filtered);
     });

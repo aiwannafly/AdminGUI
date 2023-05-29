@@ -128,12 +128,11 @@ class _TrainerFormState extends State<TrainerForm> {
     }
     builder.section = currentSection!;
     builder.tourist = currentTourist!;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 
   void selectTourist() {
-    Selector.selectTourist(context, onSelected: (t) {
+    Selector.selectTrainerAndSportsmanCandidates(context, onSelected: (t) {
       Navigator.of(context).pop();
       setState(() {
         currentTourist = t;

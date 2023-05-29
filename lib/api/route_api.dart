@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:ffi';
-
 import 'package:tourist_admin_panel/api/base_crud_api.dart';
 import 'package:tourist_admin_panel/api/crud_api.dart';
 import 'package:tourist_admin_panel/api/place_api.dart';
@@ -9,8 +6,6 @@ import 'package:tourist_admin_panel/model/section.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 import 'package:tourist_admin_panel/utils.dart';
 
-import 'api_fields.dart';
-import 'package:http/http.dart' as http;
 import '../model/route.dart';
 
 class RouteApi extends CRUDApi<RouteTrip> {
@@ -68,13 +63,13 @@ class RouteApi extends CRUDApi<RouteTrip> {
   }
 
   @override
-  Future<int?> create(RouteTrip value) {
-    return _crudApi.create(value);
+  Future<int?> create(RouteTrip value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(RouteTrip value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(RouteTrip value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -83,7 +78,7 @@ class RouteApi extends CRUDApi<RouteTrip> {
   }
 
   @override
-  Future<bool> update(RouteTrip value) {
-    return _crudApi.update(value);
+  Future<bool> update(RouteTrip value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

@@ -39,6 +39,10 @@ dependencies:
   map_picker_free:
   geocode:
   geolocator:
+  window_size:
+    git:
+      url: git://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
 
 dev_dependencies:
   flutter_test:

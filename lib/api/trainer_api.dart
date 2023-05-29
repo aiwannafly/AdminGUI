@@ -8,6 +8,7 @@ import 'package:tourist_admin_panel/api/tourist_api.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:tourist_admin_panel/model/tourist.dart';
+import 'package:tourist_admin_panel/utils.dart';
 
 import '../crud/filters/trainer_filters.dart';
 import '../model/trainer.dart';
@@ -49,30 +50,39 @@ class TrainerApi extends CRUDApi<Trainer> {
     int maxBirthYear = DateTime.now().year - minAge;
     String gendersStr =
         genders.fold("", (prev, curr) => "$prev,${curr.string}").substring(1);
-    var response = await http.get(Uri.parse(
-        '${apiUri}search/trainers?genders=$gendersStr'
-            '&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'
-            '&minSalary=$minSalary&maxSalary=$maxSalary'));
+    return _crudApi.getAllByUrl('search/trainers?genders=$gendersStr'
+        '&minBirthYear=$minBirthYear&maxBirthYear=$maxBirthYear'
+        '&minSalary=$minSalary&maxSalary=$maxSalary');
+  }
+
+  Future<List<Trainer>?> findByGroupAndPeriod(
+      {required int groupId,
+      required DateTime startDate,
+      required DateTime endDate}) async {
+    return _crudApi.getAllByUrl(
+        "search/trainers/group/$groupId?startDate=${dateTimeToStr(startDate)}&endDate=${dateTimeToStr(endDate)}");
+  }
+
+  Future<int?> getWorkHours(
+      {required int trainerId,
+      required DateTime startDate,
+      required DateTime endDate}) async {
+    var response = await http.get(Uri.parse("${apiUri}trainer/$trainerId/hours?"
+        "startDate=${dateTimeToStr(startDate)}&endDate=${dateTimeToStr(endDate)}"));
     if (response.statusCode != 200) {
       return null;
     }
-    var decodedBody = utf8.decode(response.body.codeUnits);
-    var collectionJson = jsonDecode(decodedBody);
-    List<Trainer> trainers = [];
-    for (dynamic entity in collectionJson) {
-      trainers.add(fromJSON(entity));
-    }
-    return trainers;
+    return int.tryParse(response.body)?? 0;
   }
 
   @override
-  Future<int?> create(Trainer value) {
-    return _crudApi.create(value);
+  Future<int?> create(Trainer value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Trainer value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Trainer value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -81,22 +91,11 @@ class TrainerApi extends CRUDApi<Trainer> {
   }
 
   Future<List<Trainer>?> findBySectionId(int id) async {
-    var response =
-        await http.get(Uri.parse("${apiUri}search/trainers/section/$id"));
-    if (response.statusCode != 200) {
-      return null;
-    }
-    var decodedBody = utf8.decode(response.body.codeUnits);
-    var collectionJson = jsonDecode(decodedBody);
-    List<Trainer> values = [];
-    for (dynamic json in collectionJson) {
-      values.add(fromJSON(json));
-    }
-    return values;
+    return _crudApi.getAllByUrl("search/trainers/section/$id");
   }
 
   @override
-  Future<bool> update(Trainer value) {
-    return _crudApi.update(value);
+  Future<bool> update(Trainer value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

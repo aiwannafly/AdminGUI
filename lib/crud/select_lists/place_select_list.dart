@@ -4,6 +4,7 @@ import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/model/place.dart';
 
 import '../../api/place_api.dart';
+import '../../components/check_box.dart';
 import '../../config/config.dart';
 
 class PlaceSelectList extends StatefulWidget {
@@ -50,7 +51,7 @@ class _PlaceSelectListState extends State<PlaceSelectList> {
           ColumnData<Place>(
               name: "Select",
               buildColumnElem: (e) =>
-                  PlaceCheckBox(place: e, selected: widget.selected),
+                  CheckBox(item: e, selected: widget.selected),
               flex: 1),
           ColumnData<Place>(
               name: "ID",
@@ -100,53 +101,6 @@ class _PlaceSelectListState extends State<PlaceSelectList> {
     return Expanded(
       flex: widget.filtersFlex,
       child: Container(),
-    );
-  }
-}
-
-class PlaceCheckBox extends StatefulWidget {
-  const PlaceCheckBox(
-      {super.key, required this.place, required this.selected});
-
-  final Place place;
-  final Set<Place> selected;
-
-  @override
-  State<PlaceCheckBox> createState() => _PlaceCheckBoxState();
-}
-
-class _PlaceCheckBoxState extends State<PlaceCheckBox> {
-  Color getColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.pressed,
-      MaterialState.hovered,
-      MaterialState.focused,
-    };
-    if (states.contains(MaterialState.selected)) {
-      return Colors.blue;
-    }
-    if (states.any(interactiveStates.contains)) {
-      return Colors.blue;
-    }
-    return Config.secondaryColor;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Checkbox(
-      checkColor: Colors.white,
-      fillColor: MaterialStateProperty.resolveWith(getColor),
-      value: widget.selected.contains(widget.place),
-      onChanged: (bool? selected) {
-        if (selected == null) return;
-        setState(() {
-          if (selected) {
-            widget.selected.add(widget.place);
-          } else {
-            widget.selected.remove(widget.place);
-          }
-        });
-      },
     );
   }
 }

@@ -27,13 +27,13 @@ class GroupApi extends CRUDApi<Group> {
   }
 
   @override
-  Future<int?> create(Group value) {
-    return _crudApi.create(value);
+  Future<int?> create(Group value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Group value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Group value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -42,7 +42,7 @@ class GroupApi extends CRUDApi<Group> {
   }
 
   @override
-  Future<bool> update(Group value) {
-    return _crudApi.update(value);
+  Future<bool> update(Group value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

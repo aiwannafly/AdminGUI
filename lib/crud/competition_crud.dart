@@ -4,6 +4,7 @@ import 'package:tourist_admin_panel/model/competition.dart';
 import 'package:tourist_admin_panel/utils.dart';
 
 import '../api/competition_api.dart';
+import '../config/config.dart';
 import 'forms/competition_form.dart';
 
 class CompetitionCRUD extends StatefulWidget {
@@ -56,15 +57,6 @@ class _CompetitionCRUDState extends State<CompetitionCRUD> {
   Widget formBuilder(
       {required Function(Competition) onSubmit, Competition? initial}) {
     return CompetitionForm(onSubmit: onSubmit, initial: initial);
-  }
-
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
   }
 
   Widget buildFilters() {

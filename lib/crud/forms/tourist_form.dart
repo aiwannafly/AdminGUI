@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:tourist_admin_panel/components/image_box.dart';
 import 'package:tourist_admin_panel/crud/forms/base_form.dart';
+import 'package:tourist_admin_panel/crud/selector.dart';
 import 'package:tourist_admin_panel/model/tourist.dart';
 
 import '../../api/group_api.dart';
@@ -33,8 +34,7 @@ class _TouristFormState extends State<TouristForm> {
   static const defaultBirthYear = 2000;
   Group? currentGroup;
 
-  String get postfix =>
-      builder.gender == Gender.male ? "_male" : "_female";
+  String get postfix => builder.gender == Gender.male ? "_male" : "_female";
 
   @override
   void initState() {
@@ -221,31 +221,15 @@ class _TouristFormState extends State<TouristForm> {
       ServiceIO().showMessage("Second name must not be empty", context);
       return;
     }
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 
   void selectGroup() {
-    ServiceIO().showWidget(context,
-        barrierColor: Colors.transparent,
-        child: Container(
-            width: max(900, Config.pageWidth(context) * .5),
-            height: max(400, Config.pageHeight(context) * .5),
-            color: Config.bgColor.withOpacity(.99),
-            padding: Config.paddingAll,
-            alignment: Alignment.center,
-            child: ItemsFutureBuilder<Group>(
-              itemsGetter: GroupApi().getAll(),
-              contentBuilder: (items) => GroupCRUD(
-                items: items,
-                onTap: (s) {
-                  currentGroup = s;
-                  Navigator.of(context).pop();
-                  setState(() {});
-                },
-                filtersFlex: 1,
-                itemHoverColor: Colors.grey,
-              ),
-            )));
+    Selector.selectGroup(context, onSelected: (s) {
+      Navigator.of(context).pop();
+      setState(() {
+        currentGroup = s;
+      });
+    });
   }
 }

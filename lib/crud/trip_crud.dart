@@ -5,6 +5,7 @@ import 'package:tourist_admin_panel/model/trip.dart';
 import 'package:tourist_admin_panel/utils.dart';
 
 import '../api/trip_api.dart';
+import '../config/config.dart';
 import 'forms/trip_form.dart';
 
 class TripCRUD extends StatefulWidget {
@@ -42,7 +43,7 @@ class _TripCRUDState extends State<TripCRUD> {
               buildColumnElem: (e) => centeredText(dateTimeToStr(e.startDate)),
               flex: 2),
           ColumnData<Trip>(
-              name: "Duration, days",
+              name: "Days",
               buildColumnElem: (e) => centeredText(e.durationDays.toString()),
               flex: 2),
           ColumnData<Trip>(
@@ -72,15 +73,6 @@ class _TripCRUDState extends State<TripCRUD> {
     return TripForm(
       onSubmit: onSubmit,
       initial: initial,
-    );
-  }
-
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
     );
   }
 

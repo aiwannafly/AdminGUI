@@ -5,6 +5,7 @@ import 'package:tourist_admin_panel/model/trainer.dart';
 
 import '../api/trainer_api.dart';
 import '../components/gender.dart';
+import '../config/config.dart';
 import '../services/service_io.dart';
 import 'filters/trainer_filters.dart';
 
@@ -85,15 +86,6 @@ class _TrainerCRUDState extends State<TrainerCRUD> {
     return TrainerForm(onSubmit: onSubmit, initial: initial);
   }
 
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
-  }
-
   Widget buildFilters() {
     if (widget.filtersFlex == 0) return const SizedBox();
     return Flexible(
@@ -101,6 +93,12 @@ class _TrainerCRUDState extends State<TrainerCRUD> {
       child: Container(
           margin: const EdgeInsets.only(top: 30),
           child: TrainerFilters(
+            onFound: (newTrainers) {
+              setState(() {
+                trainers.clear();
+                trainers.addAll(newTrainers);
+              });
+            },
             onChange: getFiltered,
           )),
     );

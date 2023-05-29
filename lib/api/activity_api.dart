@@ -36,12 +36,12 @@ class ActivityApi extends CRUDApi<Activity> {
   }
 
   @override
-  Future<int?> create(Activity value) {
-    return _crudApi.create(value);
+  Future<int?> create(Activity value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Activity value) {
+  Future<bool> delete(Activity value, [List<String>? errors]) {
     return _crudApi.delete(value);
   }
 
@@ -51,7 +51,7 @@ class ActivityApi extends CRUDApi<Activity> {
   }
 
   @override
-  Future<bool> update(Activity value) {
-    return _crudApi.update(value);
+  Future<bool> update(Activity value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

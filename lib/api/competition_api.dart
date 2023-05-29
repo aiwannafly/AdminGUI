@@ -34,13 +34,13 @@ class CompetitionApi extends CRUDApi<Competition> {
   }
 
   @override
-  Future<int?> create(Competition value) {
-    return _crudApi.create(value);
+  Future<int?> create(Competition value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Competition value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Competition value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -49,7 +49,7 @@ class CompetitionApi extends CRUDApi<Competition> {
   }
 
   @override
-  Future<bool> update(Competition value) {
-    return _crudApi.update(value);
+  Future<bool> update(Competition value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

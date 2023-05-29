@@ -44,13 +44,13 @@ class TripApi extends CRUDApi<Trip> {
   }
 
   @override
-  Future<int?> create(Trip value) {
-    return _crudApi.create(value);
+  Future<int?> create(Trip value, [List<String>? errors]) {
+    return _crudApi.create(value, errors);
   }
 
   @override
-  Future<bool> delete(Trip value) {
-    return _crudApi.delete(value);
+  Future<bool> delete(Trip value, [List<String>? errors]) {
+    return _crudApi.delete(value, errors);
   }
 
   @override
@@ -59,7 +59,7 @@ class TripApi extends CRUDApi<Trip> {
   }
 
   @override
-  Future<bool> update(Trip value) {
-    return _crudApi.update(value);
+  Future<bool> update(Trip value, [List<String>? errors]) {
+    return _crudApi.update(value, errors);
   }
 }

@@ -3,6 +3,7 @@ import 'package:tourist_admin_panel/crud/base_crud.dart';
 import 'package:tourist_admin_panel/crud/forms/place_form.dart';
 
 import '../api/place_api.dart';
+import '../config/config.dart';
 import '../model/place.dart';
 
 class PlaceCRUD extends StatefulWidget {
@@ -50,15 +51,6 @@ class _PlaceCRUDState extends State<PlaceCRUD> {
 
   Widget formBuilder({required Function(Place) onSubmit, Place? initial}) {
     return PlaceForm(onSubmit: onSubmit, initial: initial,);
-  }
-
-  Widget centeredText(String text) {
-    return Center(
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
   }
 
   Widget buildFilters() {

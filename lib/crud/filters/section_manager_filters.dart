@@ -11,7 +11,7 @@ class SectionManagerFilters extends StatelessWidget {
 
   final VoidCallback onChange;
 
-  static final ageRangeNotifier = ValueNotifier(const RangeValues(24, 40));
+  static final ageRangeNotifier = ValueNotifier(const RangeValues(20, 60));
   static final employmentYearNotifier =
       ValueNotifier(RangeValues(2000, DateTime.now().year.toDouble()));
   static final salaryRangeNotifier = ValueNotifier(RangeValues(

@@ -21,6 +21,10 @@ class ImageBox extends StatelessWidget {
     return Container(
         height: areaSize,
         width: areaSize,
+        decoration: const BoxDecoration(
+          color: Config.secondaryColor,
+          borderRadius: Config.borderRadius
+        ),
         alignment: Alignment.center,
         child: SizedBox(
           height: imageSize,

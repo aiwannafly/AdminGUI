@@ -13,13 +13,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: context.read<MenuAppController>().scaffoldKey,
-      drawer: const SideMenu(),
+      drawer: SideMenu(),
       body: SafeArea(
           child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (Responsive.isDesktop(context))
-            const Expanded(flex: 1, child: SideMenu()),
+            Expanded(flex: 1, child: SideMenu()),
           Expanded(
               flex: 5,
               child: DashboardScreen(

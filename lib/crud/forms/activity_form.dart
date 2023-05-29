@@ -104,12 +104,15 @@ class _ActivityFormState extends State<ActivityForm> {
     }
     builder.attended = attended.toList();
     builder.schedule = currentSchedule!;
-    Navigator.of(context).pop();
     widget.onSubmit(builder.build());
   }
 
   void selectAttended() {
-    Selector.selectTourists(context, selected: attended, onDispose: () {
+    if (currentSchedule == null) {
+      ServiceIO().showMessage("Schedule is not selected", context);
+      return;
+    }
+    Selector.selectTouristsFromGroup(context, group: currentSchedule!.group, selected: attended, onDispose: () {
       Future.delayed(const Duration(milliseconds: 10), () {
         setState(() {});
       });
