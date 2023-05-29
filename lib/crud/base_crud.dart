@@ -401,9 +401,6 @@ class _BaseCrudState<T extends BaseEntity> extends State<BaseCrud<T>> {
       });
       return;
     }
-    await Future.microtask(() {
-      Navigator.of(context).pop();
-    });
     setState(() {
       widget.items.remove(value);
     });
